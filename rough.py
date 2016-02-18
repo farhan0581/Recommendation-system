@@ -18,7 +18,7 @@ page = 0
 count = 10
 while count > 0:
 
-	formdata = {'entity_id':'18070476','profile_action':'reviews-dd','page':str(page),'limit':'5'}
+	formdata = {'entity_id':'18070476','profile_action':'reviews-dd','page':str(page),'limit':'30'}
 
 	data = requests.post('https://www.zomato.com/php/social_load_more.php',headers=headers,data=formdata)
 	jdata = data.json()
@@ -49,7 +49,7 @@ while count > 0:
 		print name.strip()
 		print reviews
 		print followers
-		print expert
+		print expert.strip()
 		review = (x.getText()).encode("ascii","ignore")
 		# p/rint str(review).lstrip(' \t\n\r')
 		print " ".join(review.split())
