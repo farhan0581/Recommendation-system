@@ -1,0 +1,6 @@
+##########################################################
+how to run the server??
+1. Change to the stanford parser directory and type 
+    java -mx2g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer
+    =>server will start
+2. Then run the script example.py
