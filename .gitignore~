@@ -4,4 +4,4 @@
 *.pyc
 *.py~
 #to ignore the reviews
-data/*
+/data/*
