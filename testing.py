@@ -142,6 +142,11 @@ def typedependencies(sent_list):
 	print depend_dict
 
 
+def preprocess(review):
+	review = check_for_it(review)
+	review = split_sent(review)
+	return review
+
 
     # elif 'VB' in tagged[i][1] and len(swn.senti_synsets(tagged[i][0],'v'))>0:
     #        pscore+=(list(swn.senti_synsets(tagged[i][0],'v'))[0]).pos_score()
@@ -178,15 +183,19 @@ rev8 = "We visited the TajMahal palace.Neither the food was good nor the serving
 rev9 = "Ardor is a really beautiful place with a giant terrace and lounge. A giant Restaurant and Lounge where you can party, dance and even spend a beautiful evening listening to some soul touching Sufi songs. Their fine dining restaurant is very well decorated and is Perfect for a dinner date. And their lounge is ideal for parties and for drinking and stuff. It's actually best of both worlds. Their food was pretty decent and the service was brilliant. The staff was very polite and humble towards the customers. I enjoyed my entire experience here :)"
 rev0 = "The approach itself was so dirty, I wanted to go back but we had company & everyone was hungry. You cannot expect people to eat with a smelly, dirty ambience.The prices are high whereas the helpings are measly!!!!!!!!!!Taste, yes, I do not contest that. The food tastes good. But so does the Bengali food at Chittaranjan Park, at perhaps one third the price.Come on, wake up! if you expect people to come & eat & relish & recommend to friends & return, you need to take a look at how clean your place is or is not, how meagre your helpings are. After all, if we order Kosha Mangsho, I would expect some mutton, not bones with some flesh thrown in.This will not do."
 
+nrev = 'Food was average and the restaurant declined to honour citibank offer of 15% off on the bill value with the reason that bill is generated. We unnecessary had to pay extra money just because of this reason and non cooperation of the staff.'
+nrev1 = "Check out the pics to find out who greeted me on my first visit to Bercos CP branch. It can be expensive but not hygienic. I wonder how would be their kitchen. On top of it manager had guts to charge me too. I wish zomato introduce negative rating and big brands be more serious about food quality. Won't recommend."
+nrev2 = "Total waste of money.\" Unhygienic toilets. Rude and cunning staff. Good Ambience. Chilli potato @starter priced Rs 500/- . They also added veg manchow soup of Rs 105/- in the bill which I didn't ordered. This is my 3rd experience with Bercos C.P., that every time they will add some extra thing in your bill. 2 times before I checked my bill but unfortunately not this time, so I paid extra amount. Total bill of Rs 1360/- + various taxes= 340/- Net amount = 1707/- And fun fact..... This happens @in happy hour."
+nrev3 = "Had a horrible experience last Saturday (Feb 1, 2014) when I visited with some of my friends, as invited by a friend who had come to India from Singapore after a long time. We went upstairs where they have a bar, as my friends wanted to have drinks as well. Let me put it point-wise: 1. Service was like it doesn't exist, as all the waiters appear to be confused 2. It took 1.5 hours to serve crispy chilli potatoes!! 3. The place was too warm to sit there without getting suffocated 4. For my friends, most drinks that they had been mentioned on their drinks menu were not available! 5. It took one hour and repeated reminders to get a drink repeated for one of my friends 7. It took more than an hour to serve the dimsum platter 8. The waiters most of the time appeared clueless about what had been ordered from our table, they needed to be reminded again and again 9. The fried rice they served was not even boiled properly 10. When we asked for the bill, they gave us wrong bill, not just once, but twice!!!!! Now, where in the world this happens!! Thinking that they cant be wrong twice, we only realized after we had paid, on the second time!!! Third time they got it right. I think, there cant be a worse experience in a restaurant than this, at least it never had been like this for us. I was so embarrassed what memories my friend would take along to Singapore of Delhi and Bercos! Earlier we had some good memories of Bercos Noida, so we thought of trying it at CP as well. We even overlooked Irish bar and other much better places nearby, but Bercos CP proved us wrong. I suggest to all the readers that Bercos in CP is just waste of your time, CP has so many better places to eat, I'm sure. Food, service, ambiance, atmosphere, and cleanliness/hygiene, everything was a big let down. We even spoke to the manger later while leaving, but we could understand, he couldn't and wouldn't do much about it."
+nrev4 = "I have been there once and was highly dissapointed~! When such restaurants serve cold Chinese food, there is nothing which upsets you more. The noodles were just about okay, warm but definitely not hot. The mixed vegetables in garlic sauce was average, nothing that you would want to come back for. The ambiance was great, we took some great pictures but nobody goes back for great ambiance!"
+
+
+
 tokens = word_tokenize(review)
 t = word_tokenize(rev2)
 
-rev6 = check_for_it(rev6)
-sent = split_sent(rev6)
-print sent
 
-# typedependencies(sent)
-# print '====================================='
+sent = preprocess(nrev3)
 typedependencies(sent)
 
 
@@ -201,14 +210,7 @@ typedependencies(sent)
 
 
 
-###########################
-# common python regex usage
-###########################
-# ^ exp matchfrom start
-# $ exp match from end
-# . wildcard
-# + one or more of previous expressiom
-# * zero or more of previous item
+
 
 # for w in t:
 # 	if re.search('ts$',w):
@@ -234,14 +236,6 @@ typedependencies(sent)
 # print(breakdown)
 
 # getting_namedentity(sent)
-
-
-# 1. http://nlp.stanford.edu/software/stanford-corenlp-full-2015-04-20.zip
-# 2 . Download version 3.6.0(english) and also version 3.5.2 ---> http://nlp.stanford.edu/software/lex-parser.shtml
-# 3 . Download this -> http://nlp.stanford.edu/software/stanford-parser-full-2015-04-20.zip
-# ----------------------------------
-# check if links are duplicate
-
 
 
 

@@ -4,3 +4,30 @@ how to run the server??
     java -mx2g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer
     =>server will start
 2. Then run the script example.py
+
+
+##########################
+Source of standford parser
+##########################
+
+# 1. http://nlp.stanford.edu/software/stanford-corenlp-full-2015-04-20.zip
+# 2 . Download version 3.6.0(english) and also version 3.5.2 ---> http://nlp.stanford.edu/software/lex-parser.shtml
+# 3 . Download this -> http://nlp.stanford.edu/software/stanford-parser-full-2015-04-20.zip
+# ----------------------------------
+# check if links are duplicate
+
+
+###########################
+common python regex usage
+###########################
+# ^ exp matchfrom start
+# $ exp match from end
+# . wildcard
+# + one or more of previous expressiom
+# * zero or more of previous item
+
+######################################
+CHALLENGES,Problems and Noteworthy points
+######################################
+1. Non is not considered as negative.!
+2. Distance and relation

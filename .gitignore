@@ -1,5 +1,5 @@
 #to ignore the stanford parser
-/stanford-corenlp-full-2015-12-09/*
+stanford-corenlp-full-2015-12-09/*
 #to ignore compile versions
 *.pyc
 *.py~

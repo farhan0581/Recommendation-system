@@ -3,7 +3,7 @@ import pprint
 
 if __name__ == '__main__':
     nlp = StanfordCoreNLP('http://localhost:9000')
-    text = ('I went to the Pita Pit restaurant yesterday.The food was delicious but serving was horrible there.')
+    text = ('Check out the pics to find out who greeted me on my first visit to Bercos CP branch,it can be expensive but not hygienic.')
     # text = ('London is good at studies but bad at sports.')
     output = nlp.annotate(text, properties={
         'annotators': 'tokenize,ssplit,pos,depparse,parse,ner',
