@@ -5,6 +5,11 @@ how to run the server??
     =>server will start
 2. Then run the script example.py
 
+####################
+meanings dependency
+####################
+1.advcl:An adverbial clause modifier is a clause which modifies a verb or other predicate (adjective, etc.), as a modifier not as a core complement.
+
 
 ##########################
 Source of standford parser
@@ -31,3 +36,15 @@ CHALLENGES,Problems and Noteworthy points
 ######################################
 1. Non is not considered as negative.!
 2. Distance and relation
+
+
+
+##################
+Sentences problems
+##################
+1.The noodles were just about okay, warm but definitely not hot.
+2.The sitting which is mostly outdoor is the prettiest you can come across in CP
+3. A good pocket friendly chinese or thai restaurant in CP
+4 . I loved The Crispy Vegetables but found the Wontons to be devoid of any flavor
+5. The food tastes good.
+6. Check out the pics to find out who greeted me on my first visit to Bercos CP branch, it can be expensive but not hygienic.

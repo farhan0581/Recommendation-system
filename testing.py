@@ -1,6 +1,7 @@
 from __future__ import division  # Python 2 users only
 import os,re
 import time
+from data_prep import get_dict
 # from nltk.book import *
 # from nltk import udhr
 from corenlp import StanfordCoreNLP
@@ -90,8 +91,9 @@ def getting_namedentity(sent):
 		namedent = nltk.ne_chunk(tokenized, binary=True)
 		print '\n##################### Named Entity Recognition ###################'
 		print namedent
-		print '============================================================================================'
+		print '=================================================================================='
 
+# getting typed dependencies using stanford parser
 def typedependencies(sent_list):
 
 	pos_dict = {}
@@ -112,17 +114,33 @@ def typedependencies(sent_list):
 		print '-------------------------------------------------'
 		for j in range(len(x)):
 			
-			if 'mod' in x[j]['dep'] or 'nsubj' in x[j]['dep']:
-				print x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' + str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] + '-' + str(x[j]['dependent'])
+			if 'mod' in x[j]['dep'] or 'nsubj' in x[j]['dep'] or 'advcl' in x[j]['dep'] or 'neg' in x[j]['dep']:
+				print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' + str(x[j]['governor']) 
+					+ ' ' + x[j]['dependentGloss'] + '-' + str(x[j]['dependent']))
+				d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor']),
+					x[j]['dependentGloss'],str(x[j]['dependent'])]
+				depend_list.append(d)
+
+			
 			if 'compound' in x[j]['dep']:
 				compound_word(x[j])
-			d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor']),x[j]['dependentGloss'],str(x[j]['dependent'])]
-			depend_list.append(d)
+
+			if 'ROOT' in x[j]['dep']:
+				print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-'
+				 		+ str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] 
+				 		+ '-' + str(x[j]['dependent']))
+				d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor'])
+					,x[j]['dependentGloss'],str(x[j]['dependent'])]
+				depend_list.append(d)
+			
+			
 
 		print ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
 		for j in range(len(x)):
 			# if 'mod' in x[j]['dep'] or 'nsubj' in x[j]['dep']:
-			print x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' + str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] + '-' + str(x[j]['dependent'])
+			print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' 
+				+ str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] +
+				 '-' + str(x[j]['dependent']))
 
 		y = output['sentences'][0]['tokens']
 		for k in range(len(y)):
@@ -133,13 +151,55 @@ def typedependencies(sent_list):
 			# 	except:
 			# 		pass
 			print y[k]['lemma'] + ' --> ' + y[k]['pos']
-			pos_dict[y[k]['lemma']] = y[k]['pos']
+			pos_dict[y[k]['word']] = y[k]['pos']
 
 		depend_dict[i] = depend_list
 		depend_list = []
 
-	print pos_dict
+	return depend_dict,pos_dict
+
+# amod-->Lollies-2 Molecular-1
+def check_for_noun_adj(depend_dict,pos_dict):
+
+	sd = get_dict()
 	print depend_dict
+	print pos_dict
+	flag = 0
+	stemmer3 = WordNetLemmatizer()
+	for value in depend_dict.values():
+		for j in range(len(value)):
+			li = value[j]
+			if li[0] == "nsubj" or "amod" in li[0]:
+				n1 = li[1]
+				n2 = li[3]
+				# n1 = stemmer3.lemmatize(li[1])
+				# n2 = stemmer3.lemmatize(li[3])
+				try:
+					t1 = pos_dict[n1]
+
+				except KeyError:
+					print n1 + ' is not there!!'
+					flag = 1
+				try:
+					t2 = pos_dict[n2]
+				except KeyError:
+					print n2 + ' is not there!!'
+					flag = 1
+				if flag != 1:
+					if ('NN' in t1 and 'JJ' in t2) or ('NN' in t2 and 'JJ' in t1):
+						print n1 + ' and ' + n2 + ' appear to be meaningful'
+				try:
+					print n1 + '-->' + sd[n1]
+				except KeyError:
+					pass
+				try:
+					print n2 + '-->' + sd[n2]
+				except KeyError:
+					pass
+
+
+
+
 
 
 def preprocess(review):
@@ -179,7 +239,7 @@ rev4 = 'A good pocket friendly chinese or thai restaurant in CP. We ordered cris
 rev5 = 'The tiger prawns here. It doesn\'t get better! One of the best places to have continental food. The ambience is luxurious! Loved the fried rice too, very generous portions. Noodles are a must try too. If you\'re in CP, do head here!'
 rev6 = "When it comes to Chinese, Bercos and Yo china tops the list of any regular Chinese lover. These are the 2 mainstream famous restaurants serving delicious Chinese food, the Indian way. I absolutely love the Indo- Chinese version of Chinese food and not the Authentic Chinese served by biggies like Mainland China. I have been to the outlets of Bercos in Janakpuri District Centre and CP. I never experiment with Chinese food although i have tried a host of items like Vegetables in black bean sauce, Szechaun sauce. I never liked these items, nor the soups. It's not that they weren't properly done but i just go with very limited items. I always have Hakkah or Chilli Garlic noodles with Veg Gravy Munchurian for the mains. For the starters, Honey Chilli Potatoes and Spring rolls are the pre-decided orders. @DESIHABSHI has not tried a lot of different Chinese items but would like to recommend FA YIAN, a restaurant in the same lane, opposite to Bercos for an amazing experience. Till then, Enjoy at Bercos :D"
 rev7 = "I was here with my friends for Dinner last Saturday. How to reach? If you commute by metro, get down at Rajeev Chowk and take the exit at Gate no 7 towards Baba Kharak Singh Marg. Take a right towards the outer block, walk 300m and there it is! For the starters we ordered the Chilli Garlic Crispy Vegetable and Vegetable Fried Wontons. I loved The Crispy Vegetables but found the Wontons to be devoid of any flavor. We also ordered their Signature Fruit Beer which tasted good! For the mains, I tried the Chilli Garlic Noodle accompanied with Assorted Vegetables in Garlic Sauce Followed by Garlic Steamed Rice and Vegetables in Black Pepper Sauce. All of these were delicious. The ambiance and interiors were soothing and welcoming. The staff was quick,courteous and even helped us with the chopsticks! Would I go back again? Yes, definitely!!"
-rev8 = "We visited the TajMahal palace.Neither the food was good nor the serving."
+rev8 = "We visited the PitaPit restaurant.Neither the food was good nor the serving."
 rev9 = "Ardor is a really beautiful place with a giant terrace and lounge. A giant Restaurant and Lounge where you can party, dance and even spend a beautiful evening listening to some soul touching Sufi songs. Their fine dining restaurant is very well decorated and is Perfect for a dinner date. And their lounge is ideal for parties and for drinking and stuff. It's actually best of both worlds. Their food was pretty decent and the service was brilliant. The staff was very polite and humble towards the customers. I enjoyed my entire experience here :)"
 rev0 = "The approach itself was so dirty, I wanted to go back but we had company & everyone was hungry. You cannot expect people to eat with a smelly, dirty ambience.The prices are high whereas the helpings are measly!!!!!!!!!!Taste, yes, I do not contest that. The food tastes good. But so does the Bengali food at Chittaranjan Park, at perhaps one third the price.Come on, wake up! if you expect people to come & eat & relish & recommend to friends & return, you need to take a look at how clean your place is or is not, how meagre your helpings are. After all, if we order Kosha Mangsho, I would expect some mutton, not bones with some flesh thrown in.This will not do."
 
@@ -189,16 +249,18 @@ nrev2 = "Total waste of money.\" Unhygienic toilets. Rude and cunning staff. Goo
 nrev3 = "Had a horrible experience last Saturday (Feb 1, 2014) when I visited with some of my friends, as invited by a friend who had come to India from Singapore after a long time. We went upstairs where they have a bar, as my friends wanted to have drinks as well. Let me put it point-wise: 1. Service was like it doesn't exist, as all the waiters appear to be confused 2. It took 1.5 hours to serve crispy chilli potatoes!! 3. The place was too warm to sit there without getting suffocated 4. For my friends, most drinks that they had been mentioned on their drinks menu were not available! 5. It took one hour and repeated reminders to get a drink repeated for one of my friends 7. It took more than an hour to serve the dimsum platter 8. The waiters most of the time appeared clueless about what had been ordered from our table, they needed to be reminded again and again 9. The fried rice they served was not even boiled properly 10. When we asked for the bill, they gave us wrong bill, not just once, but twice!!!!! Now, where in the world this happens!! Thinking that they cant be wrong twice, we only realized after we had paid, on the second time!!! Third time they got it right. I think, there cant be a worse experience in a restaurant than this, at least it never had been like this for us. I was so embarrassed what memories my friend would take along to Singapore of Delhi and Bercos! Earlier we had some good memories of Bercos Noida, so we thought of trying it at CP as well. We even overlooked Irish bar and other much better places nearby, but Bercos CP proved us wrong. I suggest to all the readers that Bercos in CP is just waste of your time, CP has so many better places to eat, I'm sure. Food, service, ambiance, atmosphere, and cleanliness/hygiene, everything was a big let down. We even spoke to the manger later while leaving, but we could understand, he couldn't and wouldn't do much about it."
 nrev4 = "I have been there once and was highly dissapointed~! When such restaurants serve cold Chinese food, there is nothing which upsets you more. The noodles were just about okay, warm but definitely not hot. The mixed vegetables in garlic sauce was average, nothing that you would want to come back for. The ambiance was great, we took some great pictures but nobody goes back for great ambiance!"
 
-
+sample = "The food was very good but the ambience was pathetic"
 
 tokens = word_tokenize(review)
 t = word_tokenize(rev2)
 
 
-sent = preprocess(nrev3)
-typedependencies(sent)
+sent = preprocess(rev8)
+dp,dd = typedependencies(sent)
+check_for_noun_adj(dp,dd)
 
 
+# rev6,7
 # text = ('I went to the Pita Pit restaurant yesterday.The food was delicious but serving was horrible there.')
 # text = ('London is good at studies but bad at sports.')
 
@@ -251,9 +313,9 @@ typedependencies(sent)
 # stemmer2 = SnowballStemmer("english")
 # stemmer3 = WordNetLemmatizer()
 # stemmer3.lemmatize("awesome")
-# print stemmer3.lemmatize("prettiest")
-# print stemmer.stem('prettiest')
-# print stemmer2.stem('prettiest')
+# print stemmer3.lemmatize("lollies")
+# print stemmer.stem('lollies')
+# print stemmer2.stem('lollies')
 # print swn.senti_synsets('must','m')
 
 # sent = "My name is Farhan Khan and I live in New Delhi"
