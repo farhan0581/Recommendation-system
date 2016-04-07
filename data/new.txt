@@ -1,0 +1,9 @@
+juicy	3
+cunning	-4
+crispy	3
+unhygienic -5
+disappointed -3
+loved	4
+recommend	4
+high	-2
+measly	-3

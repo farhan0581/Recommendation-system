@@ -4,4 +4,3 @@ stanford-corenlp-full-2015-12-09/*
 *.pyc
 *.py~
 #to ignore the reviews
-data/*

@@ -20,6 +20,9 @@ from nltk.stem.snowball import SnowballStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.parse.stanford import StanfordDependencyParser
 from nltk.internals import find_jars_within_path
+from operator import itemgetter
+import itertools
+import collections
 
 java_path = "/usr/lib/jvm/java-8-oracle/jre/bin/java" # replace this
 os.environ['JAVAHOME'] = java_path
@@ -27,14 +30,36 @@ os.environ['JAVAHOME'] = java_path
 os.environ['STANFORD_PARSER'] = '/home/farhan/Recommendation-system/stanford-ner-2015-12-09'
 os.environ['STANFORD_MODELS'] = '/home/farhan/Recommendation-system/stanford-ner-2015-12-09/classifiers'
 
+# defining global parameters
+score_dic , stopwords = get_dict()
+neg_prefix = ['not','none','nor','n\'t']
+final_score = {}
+
 
 # combine compound word
 def compound_word(li):
-	val = int(li['dependent'] - int(li['governor']))
+	# print li
+	s = 0
+	d = {}
+	a = []
+	cw = ''
+	for i in range(len(li)):
+		n1 = li[i][1]
+		n2 = li[i][3]
+		d[n1] = li[i][0]
+		d[n2] = li[i][2]
+		n3 = abs(n1-n2)
+		# a.append(n1+n2)
+		if n3 == 1:
+			s = s + 1
+		elif n3 == 2:
+			s = s + 2
+	if s == 2 or s == 3:
+		d = collections.OrderedDict(sorted(d.items()))
+		for value in d.values():
+			cw = cw + value.lower() + ' '
+	print "Compound word ==> " +  cw[0:-1]
 	
-	if abs(val) == 1:
-		cword = li['dependentGloss'] + '-' + li['governorGloss']
-		print cword
 
 # checking for it and break on that basis
 def check_for_it(sentence):
@@ -89,9 +114,9 @@ def getting_namedentity(sent):
 		getting_sentiment(tokenized)
 		# print tokenized
 		namedent = nltk.ne_chunk(tokenized, binary=True)
-		print '\n##################### Named Entity Recognition ###################'
+		print '\n##################### Named Entity Recognition#############'
 		print namedent
-		print '=================================================================================='
+		print '========================================================'
 
 # getting typed dependencies using stanford parser
 def typedependencies(sent_list):
@@ -99,9 +124,12 @@ def typedependencies(sent_list):
 	pos_dict = {}
 	depend_dict = {}
 	depend_list = []
+	proper_names = []
+	neg_words = []
 	
 	nlp = StanfordCoreNLP('http://localhost:9000')
 	for i in range(len(sent_list)):
+		compound_list = []
 		print sent_list[i]
 		output = nlp.annotate(sent_list[i], properties={
     				'annotators': 'tokenize,ssplit,pos,depparse,parse,ner',
@@ -114,7 +142,9 @@ def typedependencies(sent_list):
 		print '-------------------------------------------------'
 		for j in range(len(x)):
 			
-			if 'mod' in x[j]['dep'] or 'nsubj' in x[j]['dep'] or 'advcl' in x[j]['dep'] or 'neg' in x[j]['dep']:
+			if ('mod' in x[j]['dep'] or 'nsubj' in x[j]['dep'] 
+				or 'advcl' in x[j]['dep'] or 'neg' in x[j]['dep'] or 'dobj'
+				 in x[j]['dep']):
 				print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' + str(x[j]['governor']) 
 					+ ' ' + x[j]['dependentGloss'] + '-' + str(x[j]['dependent']))
 				d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor']),
@@ -123,7 +153,10 @@ def typedependencies(sent_list):
 
 			
 			if 'compound' in x[j]['dep']:
-				compound_word(x[j])
+				# compound_word(x[j])
+				ll = [x[j]['governorGloss'],x[j]['governor'],
+						x[j]['dependentGloss'],x[j]['dependent']]
+				compound_list.append(ll)
 
 			if 'ROOT' in x[j]['dep']:
 				print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-'
@@ -132,9 +165,33 @@ def typedependencies(sent_list):
 				d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor'])
 					,x[j]['dependentGloss'],str(x[j]['dependent'])]
 				depend_list.append(d)
-			
-			
 
+			# getting the negative words..
+			if 'neg' in x[j]['dep']:
+				x1 = x[j]['governorGloss'].lower()
+				x2 = x[j]['dependentGloss'].lower()
+				if x1 not in stopwords:
+					neg_words.append(x1)
+				else:
+					neg_words.append(x2)
+				# if neg_word == 'neg':
+				# 	neg_word = x[j]['dependentGloss']
+				# 	neg_words.append(neg_word)
+				# print neg_word + ' is negative here.....'
+			if 'conj' in x[j]['dep']:
+				x1 = x[j]['governorGloss'].lower()
+				x2 = x[j]['dependentGloss'].lower()
+				if x1 in neg_prefix:
+					neg_words.append(x2)
+				# elif (x2 == 'not' or x2 == 'nor' or x2 == 'non'):
+				# 	neg_words.append(x1)
+				elif x2 in neg_prefix:
+					neg_words.append(x1)
+
+
+
+			
+		
 		print ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
 		for j in range(len(x)):
 			# if 'mod' in x[j]['dep'] or 'nsubj' in x[j]['dep']:
@@ -152,31 +209,39 @@ def typedependencies(sent_list):
 			# 		pass
 			print y[k]['lemma'] + ' --> ' + y[k]['pos']
 			pos_dict[y[k]['word']] = y[k]['pos']
+			if 'NNP' in y[k]['pos']:
+				proper_names.append(y[k]['word'])
 
 		depend_dict[i] = depend_list
 		depend_list = []
 
+		if len(compound_list) > 0:
+			compound_word(compound_list)
+	print '--------NAMES------' + str(proper_names)
+	print '--------NEGATIVE----' + str(neg_words)
 	return depend_dict,pos_dict
 
-# amod-->Lollies-2 Molecular-1
+
 def check_for_noun_adj(depend_dict,pos_dict):
 
-	sd = get_dict()
+	# getting the score and stopwords dictionary
+	sd,stopwords = get_dict()
 	print depend_dict
 	print pos_dict
 	flag = 0
 	stemmer3 = WordNetLemmatizer()
 	for value in depend_dict.values():
 		for j in range(len(value)):
+			score1 = 100
+			score2 = 100
 			li = value[j]
-			if li[0] == "nsubj" or "amod" in li[0]:
+			if li[0] == "nsubj" or "mod" in li[0]:
 				n1 = li[1]
 				n2 = li[3]
 				# n1 = stemmer3.lemmatize(li[1])
 				# n2 = stemmer3.lemmatize(li[3])
 				try:
 					t1 = pos_dict[n1]
-
 				except KeyError:
 					print n1 + ' is not there!!'
 					flag = 1
@@ -185,21 +250,103 @@ def check_for_noun_adj(depend_dict,pos_dict):
 				except KeyError:
 					print n2 + ' is not there!!'
 					flag = 1
-				if flag != 1:
-					if ('NN' in t1 and 'JJ' in t2) or ('NN' in t2 and 'JJ' in t1):
-						print n1 + ' and ' + n2 + ' appear to be meaningful'
+				if (flag != 1 and n1.lower() not in stopwords
+					 and n2.lower() not in stopwords):
+					# check if tags have a score...
+					try:
+						score1 = sd[n1.lower()]
+					except KeyError:
+						pass
+					try:
+						score2 = sd[n2.lower()]
+					except KeyError:
+						pass
+					if score1 != 100 or score2 != 100:
+						if 'NN' in t1 or 'NN' in t2:
+							if 'JJ' in t1 or 'JJ' in t2:
+								print n1 + ' and ' + n2 + ' appear to be  meaningful...'
+							else:
+								print n1 + ' and ' + n2 + ' appear to be less meaningful...'
+						else:
+							print n1 + ' and ' + n2 + ' appear to be very less meaningful'
+						if score1 != 100:
+							print n1,score1
+							final_score[n2] = [score1,li[2]]
+						if score2 != 100:
+							print n2,score2
+							final_score[n1] = [score2,li[4]]
+					else:
+						print 'The scores are not present for ' + n1 + ' and ' + n2
+
+			# checking for direct object...
+			if 'dobj' in li[0]:
+				n1 = li[1]
+				n2 = li[3]
+				t1 = pos_dict[n1]
+				t2 = pos_dict[n2]
+				score1 = 100
+				score2 = 100
 				try:
-					print n1 + '-->' + sd[n1]
+					score1 = sd[n1.lower()]
 				except KeyError:
 					pass
 				try:
-					print n2 + '-->' + sd[n2]
+					score2 = sd[n2.lower()]
 				except KeyError:
 					pass
+				if score1 != 100 or score2 != 100:
+					if (n1.lower() not in stopwords and
+						 n2.lower() not in stopwords):
+						if 'NN' in t1 or 'NN' in t2:
+							if 'JJ' in t1 or 'JJ' in t2:
+								print n1,t1 + ' and ' + n2,t2 + ' adjective-noun as direct object...'
+							else:
+								print n1,t1 + ' and ' + n2,t2 + ' as direct object...'
+						else:
+							print 'no noun occurance'
+
+						try:
+							x = final_score[n1]
+						except KeyError:
+							if score2 != 100:
+								final_score[n1] = [score2,'DIRECT OBJECT...']
+						try:
+							x = final_score[n2]
+						except KeyError:
+							if score1 != 100:
+								final_score[n2] = [score1,'DIRECT OBJECT...']
+
+
+					else:
+						print '-----------stopwords-----------'
 
 
 
 
+
+					# if ('NN' in t1 and 'JJ' in t2) or ('NN' in t2 and 'JJ' in t1):
+					# 	print n1 + ' and ' + n2 + ' appear to be meaningful'
+					# else:
+					# 	try:
+					# 		score1 = sd[n1]
+					# 	except KeyError:
+					# 		pass
+					# 	try:
+					# 		score2 = sd[n2]
+					# 	except KeyError:
+					# 		pass
+					# 	if score1 != 100 or score2 != 100:
+					# 		print n1 + ' and ' + n2 + ' also appear to be meaningful'
+
+
+				# try:
+				# 	print n1 + '-->' + sd[n1]
+				# except KeyError:
+				# 	pass
+				# try:
+				# 	print n2 + '-->' + sd[n2]
+				# except KeyError:
+				# 	pass
 
 
 def preprocess(review):
@@ -242,27 +389,39 @@ rev7 = "I was here with my friends for Dinner last Saturday. How to reach? If yo
 rev8 = "We visited the PitaPit restaurant.Neither the food was good nor the serving."
 rev9 = "Ardor is a really beautiful place with a giant terrace and lounge. A giant Restaurant and Lounge where you can party, dance and even spend a beautiful evening listening to some soul touching Sufi songs. Their fine dining restaurant is very well decorated and is Perfect for a dinner date. And their lounge is ideal for parties and for drinking and stuff. It's actually best of both worlds. Their food was pretty decent and the service was brilliant. The staff was very polite and humble towards the customers. I enjoyed my entire experience here :)"
 rev0 = "The approach itself was so dirty, I wanted to go back but we had company & everyone was hungry. You cannot expect people to eat with a smelly, dirty ambience.The prices are high whereas the helpings are measly!!!!!!!!!!Taste, yes, I do not contest that. The food tastes good. But so does the Bengali food at Chittaranjan Park, at perhaps one third the price.Come on, wake up! if you expect people to come & eat & relish & recommend to friends & return, you need to take a look at how clean your place is or is not, how meagre your helpings are. After all, if we order Kosha Mangsho, I would expect some mutton, not bones with some flesh thrown in.This will not do."
+rev11 = "Odeon social is the new addition to the social legacy. From ambience to food to service to the entrance as well ,everything was just mind blowing. The servers wearing school uniform and the mark sheet board definitely takes you back to ur school days. The service was fast and efficient. Ordered: a glass of Sula satori Merlot Malbec ,cheese Masala pao,chilly paneer black pepper box,shawarma wrap,yo mama. Chilly paneer black pepper box was excellent. The sauce was perfectly made. Shawarma wrap was delicious. Garlic mayo and fries were the stars. The masala used on the fries reminded me of fries from McDonald's. Cheese masala pao!!lip smacking is the correct word. Loved it to last bite. I was full but still couldn't resist myself from finishing he dish. Overall it's an amazing new place in cp and a must try."
 
 nrev = 'Food was average and the restaurant declined to honour citibank offer of 15% off on the bill value with the reason that bill is generated. We unnecessary had to pay extra money just because of this reason and non cooperation of the staff.'
 nrev1 = "Check out the pics to find out who greeted me on my first visit to Bercos CP branch. It can be expensive but not hygienic. I wonder how would be their kitchen. On top of it manager had guts to charge me too. I wish zomato introduce negative rating and big brands be more serious about food quality. Won't recommend."
 nrev2 = "Total waste of money.\" Unhygienic toilets. Rude and cunning staff. Good Ambience. Chilli potato @starter priced Rs 500/- . They also added veg manchow soup of Rs 105/- in the bill which I didn't ordered. This is my 3rd experience with Bercos C.P., that every time they will add some extra thing in your bill. 2 times before I checked my bill but unfortunately not this time, so I paid extra amount. Total bill of Rs 1360/- + various taxes= 340/- Net amount = 1707/- And fun fact..... This happens @in happy hour."
 nrev3 = "Had a horrible experience last Saturday (Feb 1, 2014) when I visited with some of my friends, as invited by a friend who had come to India from Singapore after a long time. We went upstairs where they have a bar, as my friends wanted to have drinks as well. Let me put it point-wise: 1. Service was like it doesn't exist, as all the waiters appear to be confused 2. It took 1.5 hours to serve crispy chilli potatoes!! 3. The place was too warm to sit there without getting suffocated 4. For my friends, most drinks that they had been mentioned on their drinks menu were not available! 5. It took one hour and repeated reminders to get a drink repeated for one of my friends 7. It took more than an hour to serve the dimsum platter 8. The waiters most of the time appeared clueless about what had been ordered from our table, they needed to be reminded again and again 9. The fried rice they served was not even boiled properly 10. When we asked for the bill, they gave us wrong bill, not just once, but twice!!!!! Now, where in the world this happens!! Thinking that they cant be wrong twice, we only realized after we had paid, on the second time!!! Third time they got it right. I think, there cant be a worse experience in a restaurant than this, at least it never had been like this for us. I was so embarrassed what memories my friend would take along to Singapore of Delhi and Bercos! Earlier we had some good memories of Bercos Noida, so we thought of trying it at CP as well. We even overlooked Irish bar and other much better places nearby, but Bercos CP proved us wrong. I suggest to all the readers that Bercos in CP is just waste of your time, CP has so many better places to eat, I'm sure. Food, service, ambiance, atmosphere, and cleanliness/hygiene, everything was a big let down. We even spoke to the manger later while leaving, but we could understand, he couldn't and wouldn't do much about it."
 nrev4 = "I have been there once and was highly dissapointed~! When such restaurants serve cold Chinese food, there is nothing which upsets you more. The noodles were just about okay, warm but definitely not hot. The mixed vegetables in garlic sauce was average, nothing that you would want to come back for. The ambiance was great, we took some great pictures but nobody goes back for great ambiance!"
-
+nrev5 = "Please carry id proof with you if you want to have cocktails . worst restaurant ever visit in cp and there service is very slow as compare to other restaurants"
 sample = "The food was very good but the ambience was pathetic"
-
-tokens = word_tokenize(review)
+nrev6 = "Very unapologetic staff.. I went there on 3rd April got a big METAL piece in my chicken dish. The staff there were behaving as if I have put that metal piece in my dish.. Moreover staff included that dish in my bill. Till that instance it used to be my favourite place for Chinese food.. But now I don't think I can again go there and have that piece of metal, and facing that rude staff"
+nrev7 = "This place has turned into SHIT recently. No wonder nobody comes there even on weekends. I went there along with my family and friends on Sunday. I was surprised to see there were no customers. We went inside. It took them 10 minutes to bring the menu.We ordered something on which they asked for the Photo ID on which I produced it to them. Later on they started demanding the ID for everyone. Such a redeculious behaviour. The waiter kept arguing on which we requested him to call the manager. Manager came and repeated his lines like a parrot without logic. 3 out of 5 of us showed him our IDs. Its not necessary for everyone to carry an ID. They kept on arguing for each members ID and refused to serve. Such a insult to a customer. We left the place without having anything. PLEASE DON'T VISIT IT. - Yes, this is coming from a frequent visitor of this place. I have been here about more than 50 times and liked this place. BUT it has turned into horrible place with lack of customer service. Looks like they are no more interested in Restaurant Business. AVOID BERCOS CP Outlet."
+nrev8 = "I'm a big fan of the hauz khas social. So I definitely wanted to try this one. The food was definitely below average. We tried the Mezze platter and it was the worst Mediterranean food I've had. Management was sufficiently apologetic and asked for feedback on the comments card. The thing that put me off was that the chef came out and started arguing with us and insisting that his food was perfect. He has no compulsion to implement our suggestions, but actually coming out and fighting was too much. Definitely not going again."
+ww = "The food tastes good"
+qq = "The food was not good."
+ss = "Spring rolls were just fine and their chicken drumsticks are hands down the best you can ever taste. However the noodles left me a bit unsatisfied and were below their usual standardself."
+tokens = word_tokenize(nrev)
 t = word_tokenize(rev2)
 
 
-sent = preprocess(rev8)
+sent = preprocess(nrev2)
 dp,dd = typedependencies(sent)
 check_for_noun_adj(dp,dd)
+print final_score
+# getting_namedentity(sent)
 
 
-# rev6,7
+# rev6,7{9}
 # text = ('I went to the Pita Pit restaurant yesterday.The food was delicious but serving was horrible there.')
 # text = ('London is good at studies but bad at sports.')
+
+# good results-->> nrev,sample,rev4
+# not good -->> nrev2
+# bad -->> nrev3
 
     # print(output['sentences'][0]['parse'])
     # output = nlp.tokensregex(text, pattern='/Pusheen|Smitha/', filter=False)
@@ -313,7 +472,7 @@ check_for_noun_adj(dp,dd)
 # stemmer2 = SnowballStemmer("english")
 # stemmer3 = WordNetLemmatizer()
 # stemmer3.lemmatize("awesome")
-# print stemmer3.lemmatize("lollies")
+# print stemmer3.lemmatize("loved")
 # print stemmer.stem('lollies')
 # print stemmer2.stem('lollies')
 # print swn.senti_synsets('must','m')
