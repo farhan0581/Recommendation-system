@@ -408,7 +408,7 @@ tokens = word_tokenize(nrev)
 t = word_tokenize(rev2)
 
 
-sent = preprocess(nrev2)
+sent = preprocess(rev7)
 dp,dd = typedependencies(sent)
 check_for_noun_adj(dp,dd)
 print final_score
@@ -517,3 +517,8 @@ print final_score
 # [parse.tree() for parse in dep_parser.raw_parse("The quick brown fox jumps over the lazy dog.")]
 
 
+food=['cuisine','taste','starter','menu','meal','dessert','kitchen','pizza','dish','quantity','spread','chef','ingredient','food','flavour']
+service=['service','waiter','staff','delivery','check','reservation','host','counter','serve','table']
+price=['cost','price','overpriced','free','money','bargain','paisa',]
+ambience=['ambience','ambiance','decor','design','atmosphere','environment',		
+		'setting','crowd','interior','music','sitting']

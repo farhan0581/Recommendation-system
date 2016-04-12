@@ -1,5 +1,5 @@
 from __future__ import division  # Python 2 users only
-import os,re
+import os,re,csv
 import time
 from data_prep import get_dict
 # from nltk.book import *
@@ -25,9 +25,10 @@ from nltk.internals import find_jars_within_path
 from operator import itemgetter
 import itertools
 import collections
+import dpath.util
 
-x = 'extra'
-print swn.senti_synsets(x,'n')[0]
+# x = 'extra'
+# print swn.senti_synsets(x,'n')[0]
 
 # li = ['R','A']
 # if li in 'A':
@@ -41,10 +42,19 @@ li = ['1','2','farhan']
 if 'farhan' in li:
 	print 'k'
 
+dishdic = {}
 
+reader = csv.reader(open('data/zomato_dishes.csv','r'))
+for row in reader:
+	dishdic[row[0]] = row[1]
+
+print len(dishdic)
 dish = "chicken curry mughlai."
 m = re.search(r'curr',dish)
 if m:
 	print m.group(0)
 	print m.string
+
+for (path, value) in dpath.util.search(dishdic, 'chicken curry mughl*', yielded=True):
+	print path , value
 # print m.group(0)
