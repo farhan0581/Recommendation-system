@@ -55,6 +55,20 @@ if m:
 	print m.group(0)
 	print m.string
 
-for (path, value) in dpath.util.search(dishdic, 'chicken curry mughl*', yielded=True):
-	print path , value
+# for (path, value) in dpath.util.search(dishdic, 'chicken curry mughl*', yielded=True):
+# 	print path , value
 # print m.group(0)
+
+# dic = {'1':'dasd','2':'asdf','3':'sdv'}
+# dic = collections.OrderedDict(dic)
+# x = dic._OrderedDict_map['2']
+# for k,v in dic.items():
+# 	print k.next
+j = 0
+for i in range(j,10):
+	print i
+	j = i + 2
+x = 0
+while x < 10:
+	print x 
+	x = x + 2

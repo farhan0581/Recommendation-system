@@ -1,11 +1,13 @@
 from __future__ import division  # Python 2 users only
-import os,re
+import os
+import re
 import time
 from data_prep import get_dict
 # from nltk.book import *
 # from nltk import udhr
 from corenlp import StanfordCoreNLP
-import nltk, re, pprint
+import nltk
+import pprint
 from nltk.tokenize import word_tokenize,sent_tokenize
 from nltk import pos_tag
 import re
@@ -24,335 +26,346 @@ from operator import itemgetter
 import itertools
 import collections
 
-java_path = "/usr/lib/jvm/java-8-oracle/jre/bin/java" # replace this
+java_path = "/usr/lib/jvm/java-8-oracle/jre/bin/java"  # replace this
 os.environ['JAVAHOME'] = java_path
 
 os.environ['STANFORD_PARSER'] = '/home/farhan/Recommendation-system/stanford-ner-2015-12-09'
 os.environ['STANFORD_MODELS'] = '/home/farhan/Recommendation-system/stanford-ner-2015-12-09/classifiers'
 
 # defining global parameters
-score_dic , stopwords = get_dict()
+score_dic,stopwords = get_dict()
 neg_prefix = ['not','none','nor','n\'t']
 final_score = {}
 
 
 # combine compound word
 def compound_word(li):
-	# print li
-	s = 0
-	d = {}
-	a = []
-	cw = ''
-	for i in range(len(li)):
-		n1 = li[i][1]
-		n2 = li[i][3]
-		d[n1] = li[i][0]
-		d[n2] = li[i][2]
-		n3 = abs(n1-n2)
-		# a.append(n1+n2)
-		if n3 == 1:
-			s = s + 1
-		elif n3 == 2:
-			s = s + 2
-	if s == 2 or s == 3:
-		d = collections.OrderedDict(sorted(d.items()))
-		for value in d.values():
-			cw = cw + value.lower() + ' '
-	print "Compound word ==> " +  cw[0:-1]
-	
+
+    word = []
+    st = ''
+    length = len(li)
+    i = 0
+    while i < length:
+        while True:
+            a = li[i][0]
+            try:
+                b = li[i+1][0]
+            except IndexError:
+                i = i + 1
+                if st not in word:
+                    word.append(st.strip())
+                break
+            if b-a == 1:
+                if li[i][1].lower() not in st:
+                    st = st + ' ' + li[i][1].lower() + ' ' + li[i+1][1].lower() + ' '
+                else:
+                    st = st + ' ' + li[i+1][1].lower() + ' '
+                i = i + 1
+            else:
+                word.append(st.strip())
+                i = i + 1
+                st = ''
+                break
+
+    return word
 
 # checking for it and break on that basis
 def check_for_it(sentence):
-	sentence = sentence.replace('.It',',it')
-	sentence = sentence.replace('. It',',it')
-	sentence = sentence.replace('. it',',it')
-	sentence = sentence.replace('.it',',it')
-	return sentence
-	
+    sentence = sentence.replace('.It',',it')
+    sentence = sentence.replace('. It',',it')
+    sentence = sentence.replace('. it',',it')
+    sentence = sentence.replace('.it',',it')
+    return sentence
+    
 
 # splitting sentences on the basis of .?!
 def split_sent(sentence):
-	sentence = re.split('[.?!]',sentence)
-	sentence = [x for x in sentence if x!='']
-	return sentence 
+    sentence = re.split('[.?!]',sentence)
+    sentence = [x for x in sentence if x!='']
+    return sentence 
 
 
 
 # getting the sentiment
 def getting_sentiment(tagged):
 
-	print '-------------------------------SENTIMENT----------------------------------'
-	for i in range(0,len(tagged)):
-		stemmer = WordNetLemmatizer()
-		x = stemmer.lemmatize(tagged[i][0])
-		if 'NN' in tagged[i][1] and len(swn.senti_synsets(x,'n')) > 0:
-	    	# pscore+=(list(swn.senti_synsets(tagged[i][0],'n'))[0]).pos_score() #positive score of a word
-	            # nscore+=(list(swn.senti_synsets(tagged[i][0],'n'))[0]).neg_score()  #negative score of a word
-			print str(tagged[i][0]) + ' (noun)---> ' + str(swn.senti_synsets(x,'n')[0].pos_score())
-		if 'JJ' in tagged[i][1] and len(swn.senti_synsets(x, 'a')) > 0:
-			print str(tagged[i][0]) + ' (adjective)---> ' + str(swn.senti_synsets(x,'a')[0].pos_score())
+    print '-------------------------------SENTIMENT----------------------------------'
+    for i in range(0,len(tagged)):
+        stemmer = WordNetLemmatizer()
+        x = stemmer.lemmatize(tagged[i][0])
+        if 'NN' in tagged[i][1] and len(swn.senti_synsets(x,'n')) > 0:
+            # pscore+=(list(swn.senti_synsets(tagged[i][0],'n'))[0]).pos_score() #positive score of a word
+                # nscore+=(list(swn.senti_synsets(tagged[i][0],'n'))[0]).neg_score()  #negative score of a word
+            print str(tagged[i][0]) + ' (noun)---> ' + str(swn.senti_synsets(x,'n')[0].pos_score())
+        if 'JJ' in tagged[i][1] and len(swn.senti_synsets(x, 'a')) > 0:
+            print str(tagged[i][0]) + ' (adjective)---> ' + str(swn.senti_synsets(x,'a')[0].pos_score())
 
-		if 'VB' in tagged[i][0] and len(swn.senti_synsets(x,'v')) > 0:
-			print str(tagged[i][0]) + ' (verb)---> ' + str(swn.senti_synsets(x,'v')[0].pos_score())
+        if 'VB' in tagged[i][0] and len(swn.senti_synsets(x,'v')) > 0:
+            print str(tagged[i][0]) + ' (verb)---> ' + str(swn.senti_synsets(x,'v')[0].pos_score())
 
-		if 'RB' in tagged[i][0] and len(swn.senti_synsets(x,'r')) > 0:
-			print str(tagged[i][0]) + ' (adverb)---> ' + str(swn.senti_synsets(x,'r')[0].pos_score())
+        if 'RB' in tagged[i][0] and len(swn.senti_synsets(x,'r')) > 0:
+            print str(tagged[i][0]) + ' (adverb)---> ' + str(swn.senti_synsets(x,'r')[0].pos_score())
 
-	print '-------------------------------SENTIMENT----------------------------------'
+    print '-------------------------------SENTIMENT----------------------------------'
 
 
 
 # getting the name entity
 def getting_namedentity(sent):
-	for i in range(len(sent)):
-		tt = word_tokenize(sent[i])
-		print '\n################ Tokenized version ###############'
-		print tt
-		tokenized = pos_tag(tt)
-		print '\n################## Getting POS Tag ####################'
-		print tokenized
-		getting_sentiment(tokenized)
-		# print tokenized
-		namedent = nltk.ne_chunk(tokenized, binary=True)
-		print '\n##################### Named Entity Recognition#############'
-		print namedent
-		print '========================================================'
+    for i in range(len(sent)):
+        tt = word_tokenize(sent[i])
+        print '\n################ Tokenized version ###############'
+        print tt
+        tokenized = pos_tag(tt)
+        print '\n################## Getting POS Tag ####################'
+        print tokenized
+        getting_sentiment(tokenized)
+        # print tokenized
+        namedent = nltk.ne_chunk(tokenized, binary=True)
+        print '\n##################### Named Entity Recognition#############'
+        print namedent
+        print '========================================================'
 
 # getting typed dependencies using stanford parser
 def typedependencies(sent_list):
 
-	pos_dict = {}
-	depend_dict = {}
-	depend_list = []
-	proper_names = []
-	neg_words = []
-	
-	nlp = StanfordCoreNLP('http://localhost:9000')
-	for i in range(len(sent_list)):
-		compound_list = []
-		print sent_list[i]
-		output = nlp.annotate(sent_list[i], properties={
-    				'annotators': 'tokenize,ssplit,pos,depparse,parse,ner',
-    				'outputFormat': 'json'
-					})
-		# pprint.pprint(output)
-		x = output['sentences'][0]['basic-dependencies']
-		# pprint.pprint(output['sentences'][0]['parse'])
-		# pprint.pprint(x)
-		print '-------------------------------------------------'
-		for j in range(len(x)):
-			
-			if ('mod' in x[j]['dep'] or 'nsubj' in x[j]['dep'] 
-				or 'advcl' in x[j]['dep'] or 'neg' in x[j]['dep'] or 'dobj'
-				 in x[j]['dep']):
-				print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' + str(x[j]['governor']) 
-					+ ' ' + x[j]['dependentGloss'] + '-' + str(x[j]['dependent']))
-				d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor']),
-					x[j]['dependentGloss'],str(x[j]['dependent'])]
-				depend_list.append(d)
+    pos_dict = {}
+    depend_dict = {}
+    depend_list = []
+    proper_names = []
+    neg_words = []
+    compound_dic = {}
+    
+    nlp = StanfordCoreNLP('http://localhost:9000')
+    for i in range(len(sent_list)):
+        compound_list = []
+        print sent_list[i]
+        output = nlp.annotate(sent_list[i], properties={
+                    'annotators': 'tokenize,ssplit,pos,depparse,parse,ner',
+                    'outputFormat': 'json'
+                    })
+        # pprint.pprint(output)
+        x = output['sentences'][0]['basic-dependencies']
+        # pprint.pprint(output['sentences'][0]['parse'])
+        # pprint.pprint(x)
+        print '-------------------------------------------------'
+        for j in range(len(x)):
+            
+            if ('mod' in x[j]['dep'] or 'nsubj' in x[j]['dep'] 
+                or 'advcl' in x[j]['dep'] or 'neg' in x[j]['dep'] or 'dobj'
+                 in x[j]['dep']):
+                print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' + str(x[j]['governor']) 
+                    + ' ' + x[j]['dependentGloss'] + '-' + str(x[j]['dependent']))
+                d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor']),
+                    x[j]['dependentGloss'],str(x[j]['dependent'])]
+                depend_list.append(d)
 
-			
-			if 'compound' in x[j]['dep']:
-				# compound_word(x[j])
-				ll = [x[j]['governorGloss'],x[j]['governor'],
-						x[j]['dependentGloss'],x[j]['dependent']]
-				compound_list.append(ll)
+            
+            if 'compound' in x[j]['dep']:
+                # compound_word(x[j])
+                ll = [x[j]['governorGloss'],x[j]['governor'],
+                        x[j]['dependentGloss'],x[j]['dependent']]
+                compound_dic[x[j]['governor']] = x[j]['governorGloss']
+                compound_dic[x[j]['dependent']] = x[j]['dependentGloss']
+                # compound_list.append(ll)
 
-			if 'ROOT' in x[j]['dep']:
-				print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-'
-				 		+ str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] 
-				 		+ '-' + str(x[j]['dependent']))
-				d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor'])
-					,x[j]['dependentGloss'],str(x[j]['dependent'])]
-				depend_list.append(d)
+            if 'ROOT' in x[j]['dep']:
+                print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-'
+                        + str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] 
+                        + '-' + str(x[j]['dependent']))
+                d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor'])
+                    ,x[j]['dependentGloss'],str(x[j]['dependent'])]
+                depend_list.append(d)
 
-			# getting the negative words..
-			if 'neg' in x[j]['dep']:
-				x1 = x[j]['governorGloss'].lower()
-				x2 = x[j]['dependentGloss'].lower()
-				if x1 not in stopwords:
-					neg_words.append(x1)
-				else:
-					neg_words.append(x2)
-				# if neg_word == 'neg':
-				# 	neg_word = x[j]['dependentGloss']
-				# 	neg_words.append(neg_word)
-				# print neg_word + ' is negative here.....'
-			if 'conj' in x[j]['dep']:
-				x1 = x[j]['governorGloss'].lower()
-				x2 = x[j]['dependentGloss'].lower()
-				if x1 in neg_prefix:
-					neg_words.append(x2)
-				# elif (x2 == 'not' or x2 == 'nor' or x2 == 'non'):
-				# 	neg_words.append(x1)
-				elif x2 in neg_prefix:
-					neg_words.append(x1)
+            # getting the negative words..
+            if 'neg' in x[j]['dep']:
+                x1 = x[j]['governorGloss'].lower()
+                x2 = x[j]['dependentGloss'].lower()
+                if x1 not in stopwords:
+                    neg_words.append(x1)
+                else:
+                    neg_words.append(x2)
+                # if neg_word == 'neg':
+                #   neg_word = x[j]['dependentGloss']
+                #   neg_words.append(neg_word)
+                # print neg_word + ' is negative here.....'
+            if 'conj' in x[j]['dep']:
+                x1 = x[j]['governorGloss'].lower()
+                x2 = x[j]['dependentGloss'].lower()
+                if x1 in neg_prefix:
+                    neg_words.append(x2)
+                # elif (x2 == 'not' or x2 == 'nor' or x2 == 'non'):
+                #   neg_words.append(x1)
+                elif x2 in neg_prefix:
+                    neg_words.append(x1)
 
+        for key,value in compound_dic.items():
+            compound_list.append([key,value])
+        print compound_list
+        print compound_word(compound_list)  
+        compound_dic.clear()
+        
+        print ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
+        for j in range(len(x)):
+            # if 'mod' in x[j]['dep'] or 'nsubj' in x[j]['dep']:
+            print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' 
+                + str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] +
+                 '-' + str(x[j]['dependent']))
 
+        y = output['sentences'][0]['tokens']
+        for k in range(len(y)):
+            # if 'JJ' in y[k]['pos']:
+            #   print y[k]['lemma'] + ' --> ' + y[k]['pos']
+            #   try:
+            #       print swn.senti_synsets(y[k]['lemma'],'a')[0].pos_score()
+            #   except:
+            #       pass
+            print y[k]['lemma'] + ' --> ' + y[k]['pos']
+            pos_dict[y[k]['word']] = y[k]['pos']
+            if 'NNP' in y[k]['pos']:
+                proper_names.append(y[k]['word'])
 
-			
-		
-		print ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
-		for j in range(len(x)):
-			# if 'mod' in x[j]['dep'] or 'nsubj' in x[j]['dep']:
-			print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' 
-				+ str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] +
-				 '-' + str(x[j]['dependent']))
+        depend_dict[i] = depend_list
+        depend_list = []
 
-		y = output['sentences'][0]['tokens']
-		for k in range(len(y)):
-			# if 'JJ' in y[k]['pos']:
-			# 	print y[k]['lemma'] + ' --> ' + y[k]['pos']
-			# 	try:
-			# 		print swn.senti_synsets(y[k]['lemma'],'a')[0].pos_score()
-			# 	except:
-			# 		pass
-			print y[k]['lemma'] + ' --> ' + y[k]['pos']
-			pos_dict[y[k]['word']] = y[k]['pos']
-			if 'NNP' in y[k]['pos']:
-				proper_names.append(y[k]['word'])
-
-		depend_dict[i] = depend_list
-		depend_list = []
-
-		if len(compound_list) > 0:
-			compound_word(compound_list)
-	print '--------NAMES------' + str(proper_names)
-	print '--------NEGATIVE----' + str(neg_words)
-	return depend_dict,pos_dict
-
-
-def check_for_noun_adj(depend_dict,pos_dict):
-
-	# getting the score and stopwords dictionary
-	sd,stopwords = get_dict()
-	print depend_dict
-	print pos_dict
-	flag = 0
-	stemmer3 = WordNetLemmatizer()
-	for value in depend_dict.values():
-		for j in range(len(value)):
-			score1 = 100
-			score2 = 100
-			li = value[j]
-			if li[0] == "nsubj" or "mod" in li[0]:
-				n1 = li[1]
-				n2 = li[3]
-				# n1 = stemmer3.lemmatize(li[1])
-				# n2 = stemmer3.lemmatize(li[3])
-				try:
-					t1 = pos_dict[n1]
-				except KeyError:
-					print n1 + ' is not there!!'
-					flag = 1
-				try:
-					t2 = pos_dict[n2]
-				except KeyError:
-					print n2 + ' is not there!!'
-					flag = 1
-				if (flag != 1 and n1.lower() not in stopwords
-					 and n2.lower() not in stopwords):
-					# check if tags have a score...
-					try:
-						score1 = sd[n1.lower()]
-					except KeyError:
-						pass
-					try:
-						score2 = sd[n2.lower()]
-					except KeyError:
-						pass
-					if score1 != 100 or score2 != 100:
-						if 'NN' in t1 or 'NN' in t2:
-							if 'JJ' in t1 or 'JJ' in t2:
-								print n1 + ' and ' + n2 + ' appear to be  meaningful...'
-							else:
-								print n1 + ' and ' + n2 + ' appear to be less meaningful...'
-						else:
-							print n1 + ' and ' + n2 + ' appear to be very less meaningful'
-						if score1 != 100:
-							print n1,score1
-							final_score[n2] = [score1,li[2]]
-						if score2 != 100:
-							print n2,score2
-							final_score[n1] = [score2,li[4]]
-					else:
-						print 'The scores are not present for ' + n1 + ' and ' + n2
-
-			# checking for direct object...
-			if 'dobj' in li[0]:
-				n1 = li[1]
-				n2 = li[3]
-				t1 = pos_dict[n1]
-				t2 = pos_dict[n2]
-				score1 = 100
-				score2 = 100
-				try:
-					score1 = sd[n1.lower()]
-				except KeyError:
-					pass
-				try:
-					score2 = sd[n2.lower()]
-				except KeyError:
-					pass
-				if score1 != 100 or score2 != 100:
-					if (n1.lower() not in stopwords and
-						 n2.lower() not in stopwords):
-						if 'NN' in t1 or 'NN' in t2:
-							if 'JJ' in t1 or 'JJ' in t2:
-								print n1,t1 + ' and ' + n2,t2 + ' adjective-noun as direct object...'
-							else:
-								print n1,t1 + ' and ' + n2,t2 + ' as direct object...'
-						else:
-							print 'no noun occurance'
-
-						try:
-							x = final_score[n1]
-						except KeyError:
-							if score2 != 100:
-								final_score[n1] = [score2,'DIRECT OBJECT...']
-						try:
-							x = final_score[n2]
-						except KeyError:
-							if score1 != 100:
-								final_score[n2] = [score1,'DIRECT OBJECT...']
+        if len(compound_list) > 0:
+            compound_word(compound_list)
+    print '--------NAMES------' + str(proper_names)
+    print '--------NEGATIVE----' + str(neg_words)
+    return depend_dict,pos_dict
 
 
-					else:
-						print '-----------stopwords-----------'
+def check_for_noun_adj(depend_dict, pos_dict):
+
+    # getting the score and stopwords dictionary
+    sd,stopwords = get_dict()
+    print depend_dict
+    print pos_dict
+    flag = 0
+    stemmer3 = WordNetLemmatizer()
+    for value in depend_dict.values():
+        for j in range(len(value)):
+            score1 = 100
+            score2 = 100
+            li = value[j]
+            if li[0] == "nsubj" or "mod" in li[0]:
+                n1 = li[1]
+                n2 = li[3]
+                # n1 = stemmer3.lemmatize(li[1])
+                # n2 = stemmer3.lemmatize(li[3])
+                try:
+                    t1 = pos_dict[n1]
+                except KeyError:
+                    print n1 + ' is not there!!'
+                    flag = 1
+                try:
+                    t2 = pos_dict[n2]
+                except KeyError:
+                    print n2 + ' is not there!!'
+                    flag = 1
+                if (flag != 1 and n1.lower() not in stopwords
+                     and n2.lower() not in stopwords):
+                    # check if tags have a score...
+                    try:
+                        score1 = sd[n1.lower()]
+                    except KeyError:
+                        pass
+                    try:
+                        score2 = sd[n2.lower()]
+                    except KeyError:
+                        pass
+                    if score1 != 100 or score2 != 100:
+                        if 'NN' in t1 or 'NN' in t2:
+                            if 'JJ' in t1 or 'JJ' in t2:
+                                print n1 + ' and ' + n2 + ' appear to be  meaningful...'
+                            else:
+                                print n1 + ' and ' + n2 + ' appear to be less meaningful...'
+                        else:
+                            print n1 + ' and ' + n2 + ' appear to be very less meaningful'
+                        if score1 != 100:
+                            print n1,score1
+                            final_score[n2] = [score1,li[2]]
+                        if score2 != 100:
+                            print n2,score2
+                            final_score[n1] = [score2,li[4]]
+                    else:
+                        print 'The scores are not present for ' + n1 + ' and ' + n2
+
+            # checking for direct object...
+            if 'dobj' in li[0]:
+                n1 = li[1]
+                n2 = li[3]
+                t1 = pos_dict[n1]
+                t2 = pos_dict[n2]
+                score1 = 100
+                score2 = 100
+                try:
+                    score1 = sd[n1.lower()]
+                except KeyError:
+                    pass
+                try:
+                    score2 = sd[n2.lower()]
+                except KeyError:
+                    pass
+                if score1 != 100 or score2 != 100:
+                    if (n1.lower() not in stopwords and
+                         n2.lower() not in stopwords):
+                        if 'NN' in t1 or 'NN' in t2:
+                            if 'JJ' in t1 or 'JJ' in t2:
+                                print n1,t1 + ' and ' + n2,t2 + ' adjective-noun as direct object...'
+                            else:
+                                print n1,t1 + ' and ' + n2,t2 + ' as direct object...'
+                        else:
+                            print 'no noun occurance'
+
+                        try:
+                            x = final_score[n1]
+                        except KeyError:
+                            if score2 != 100:
+                                final_score[n1] = [score2,'DIRECT OBJECT...']
+                        try:
+                            x = final_score[n2]
+                        except KeyError:
+                            if score1 != 100:
+                                final_score[n2] = [score1,'DIRECT OBJECT...']
+
+
+                    else:
+                        print '-----------stopwords-----------'
 
 
 
 
 
-					# if ('NN' in t1 and 'JJ' in t2) or ('NN' in t2 and 'JJ' in t1):
-					# 	print n1 + ' and ' + n2 + ' appear to be meaningful'
-					# else:
-					# 	try:
-					# 		score1 = sd[n1]
-					# 	except KeyError:
-					# 		pass
-					# 	try:
-					# 		score2 = sd[n2]
-					# 	except KeyError:
-					# 		pass
-					# 	if score1 != 100 or score2 != 100:
-					# 		print n1 + ' and ' + n2 + ' also appear to be meaningful'
+                    # if ('NN' in t1 and 'JJ' in t2) or ('NN' in t2 and 'JJ' in t1):
+                    #   print n1 + ' and ' + n2 + ' appear to be meaningful'
+                    # else:
+                    #   try:
+                    #       score1 = sd[n1]
+                    #   except KeyError:
+                    #       pass
+                    #   try:
+                    #       score2 = sd[n2]
+                    #   except KeyError:
+                    #       pass
+                    #   if score1 != 100 or score2 != 100:
+                    #       print n1 + ' and ' + n2 + ' also appear to be meaningful'
 
 
-				# try:
-				# 	print n1 + '-->' + sd[n1]
-				# except KeyError:
-				# 	pass
-				# try:
-				# 	print n2 + '-->' + sd[n2]
-				# except KeyError:
-				# 	pass
+                # try:
+                #   print n1 + '-->' + sd[n1]
+                # except KeyError:
+                #   pass
+                # try:
+                #   print n2 + '-->' + sd[n2]
+                # except KeyError:
+                #   pass
 
 
 def preprocess(review):
-	review = check_for_it(review)
-	review = split_sent(review)
-	return review
+    review = check_for_it(review)
+    review = split_sent(review)
+    return review
 
 
     # elif 'VB' in tagged[i][1] and len(swn.senti_synsets(tagged[i][0],'v'))>0:
@@ -408,7 +421,7 @@ tokens = word_tokenize(nrev)
 t = word_tokenize(rev2)
 
 
-sent = preprocess(rev7)
+sent = preprocess(rev9)
 dp,dd = typedependencies(sent)
 check_for_noun_adj(dp,dd)
 print final_score
@@ -434,9 +447,9 @@ print final_score
 
 
 # for w in t:
-# 	if re.search('ts$',w):
-# 		# print w
-# 		print 'hi'
+#   if re.search('ts$',w):
+#       # print w
+#       print 'hi'
 
 # porter = nltk.PorterStemmer()
 # print [porter.stem(t) for t in tokens]
@@ -444,8 +457,8 @@ print final_score
 # print t
 # fdist = nltk.FreqDist(t)
 # for word in sorted(fdist):
-# 	print('{}->{};'.format(word, fdist[word]))
-	# pass
+#   print('{}->{};'.format(word, fdist[word]))
+    # pass
 # parser = stanford.StanfordParser()
 
 # pos = [nltk.pos_tag(word) for word in t]
@@ -487,7 +500,7 @@ print final_score
 # se = word_tokenize(se)
 # se = pos_tag(se)
 # english_nertagger = StanfordNERTagger("/home/farhan/Recommendation-system/stanford-ner-2015-12-09/classifiers/english.all.3class.distsim.crf.ser.gz",
-	# "/home/farhan/Recommendation-system/stanford-ner-2015-12-09/stanford-ner.jar")
+    # "/home/farhan/Recommendation-system/stanford-ner-2015-12-09/stanford-ner.jar")
 # li = english_nertagger.tag('Rami Eid is studying at Stony Brook University in NY'.split())
 
 
@@ -499,7 +512,7 @@ print final_score
 # time.sleep(5)
 # print path
 # if not os.path.exists(path):
-# 	os.makedirs(path,0777)
+#   os.makedirs(path,0777)
 # languages = ['Chickasaw', 'English', 'German_Deutsch',
 #     'Greenlandic_Inuktikut', 'Hungarian_Magyar', 'Ibibio_Efik']
 # cfd = nltk.ConditionalFreqDist(
@@ -520,5 +533,5 @@ print final_score
 food=['cuisine','taste','starter','menu','meal','dessert','kitchen','pizza','dish','quantity','spread','chef','ingredient','food','flavour']
 service=['service','waiter','staff','delivery','check','reservation','host','counter','serve','table']
 price=['cost','price','overpriced','free','money','bargain','paisa',]
-ambience=['ambience','ambiance','decor','design','atmosphere','environment',		
-		'setting','crowd','interior','music','sitting']
+ambience=['ambience','ambiance','decor','design','atmosphere','environment',        
+        'setting','crowd','interior','music','sitting']
