@@ -25,6 +25,8 @@ from nltk.internals import find_jars_within_path
 from operator import itemgetter
 import itertools
 import collections
+import dpath.util
+
 
 java_path = "/usr/lib/jvm/java-8-oracle/jre/bin/java"  # replace this
 os.environ['JAVAHOME'] = java_path
@@ -36,11 +38,14 @@ os.environ['STANFORD_MODELS'] = '/home/farhan/Recommendation-system/stanford-ner
 score_dic,stopwords = get_dict()
 neg_prefix = ['not','none','nor','n\'t']
 final_score = {}
+compound_word_dic = {}
+compound_word_list = []
+neg_words = []
 
 
 # combine compound word
 def compound_word(li):
-
+    print li
     word = []
     st = ''
     length = len(li)
@@ -66,7 +71,6 @@ def compound_word(li):
                 i = i + 1
                 st = ''
                 break
-
     return word
 
 # checking for it and break on that basis
@@ -133,7 +137,7 @@ def typedependencies(sent_list):
     depend_dict = {}
     depend_list = []
     proper_names = []
-    neg_words = []
+    # neg_words = []
     compound_dic = {}
     
     nlp = StanfordCoreNLP('http://localhost:9000')
@@ -199,9 +203,8 @@ def typedependencies(sent_list):
                 elif x2 in neg_prefix:
                     neg_words.append(x1)
 
-        for key,value in compound_dic.items():
+        for key,value in sorted(compound_dic.items()):
             compound_list.append([key,value])
-        print compound_list
         print compound_word(compound_list)  
         compound_dic.clear()
         
@@ -229,10 +232,45 @@ def typedependencies(sent_list):
         depend_list = []
 
         if len(compound_list) > 0:
-            compound_word(compound_list)
+            w = compound_word(compound_list)
+        else:
+            w = []
+        for jj in range(len(w)):
+            if w[jj] != '':
+                compound_word_list.append(w[jj])
     print '--------NAMES------' + str(proper_names)
     print '--------NEGATIVE----' + str(neg_words)
     return depend_dict,pos_dict
+
+def apply_score(li,n,score,final_score):
+    try:
+        x = final_score[n]
+        if abs(int(x[1])-int(x[2])) < abs(int(li[2])-int(li[4])):
+            final_score[n] = x
+        elif abs(int(x[1])-int(x[2])) == abs(int(li[2])-int(li[4])):
+        
+            if float(x[0]) >= float(score1):
+                final_score[n] = x
+            else:   
+                final_score[n] = [score,li[2],li[4]]
+        else:
+            final_score[n] = [score,li[2],li[4]]
+
+    except KeyError:
+        final_score[n] = [score,li[2],li[4]]
+
+    # return final_score
+
+
+def check_for_negative(a,b):
+
+    x = y = 1
+    for i in range(len(neg_words)):
+        if a in neg_words[i]:
+            x = -1
+        elif b in neg_words[i]:
+            y = -1
+    return x,y
 
 
 def check_for_noun_adj(depend_dict, pos_dict):
@@ -244,6 +282,7 @@ def check_for_noun_adj(depend_dict, pos_dict):
     flag = 0
     stemmer3 = WordNetLemmatizer()
     for value in depend_dict.values():
+        
         for j in range(len(value)):
             score1 = 100
             score2 = 100
@@ -251,6 +290,7 @@ def check_for_noun_adj(depend_dict, pos_dict):
             if li[0] == "nsubj" or "mod" in li[0]:
                 n1 = li[1]
                 n2 = li[3]
+                m1, m2 = check_for_negative(n1,n2)
                 # n1 = stemmer3.lemmatize(li[1])
                 # n2 = stemmer3.lemmatize(li[3])
                 try:
@@ -267,11 +307,11 @@ def check_for_noun_adj(depend_dict, pos_dict):
                      and n2.lower() not in stopwords):
                     # check if tags have a score...
                     try:
-                        score1 = sd[n1.lower()]
+                        score1 = int(sd[n1.lower()]) * int(m1)
                     except KeyError:
                         pass
                     try:
-                        score2 = sd[n2.lower()]
+                        score2 = int(sd[n2.lower()]) * int(m2)
                     except KeyError:
                         pass
                     if score1 != 100 or score2 != 100:
@@ -284,10 +324,37 @@ def check_for_noun_adj(depend_dict, pos_dict):
                             print n1 + ' and ' + n2 + ' appear to be very less meaningful'
                         if score1 != 100:
                             print n1,score1
-                            final_score[n2] = [score1,li[2]]
+                            try:
+                                x = final_score[n2]
+                                print x
+                                if abs(int(x[1])-int(x[2])) < abs(int(li[2])-int(li[4])):
+                                    final_score[n2] = x
+                                elif abs(int(x[1])-int(x[2])) == abs(int(li[2])-int(li[4])):
+                                
+                                    if float(x[0]) >= float(score1):
+                                        final_score[n2] = x
+                                    else:   
+                                        final_score[n2] = [score1,li[2],li[4]]
+                                else:
+                                    final_score[n2] = [score1,li[2],li[4]]
+
+                            except KeyError:
+                                final_score[n2] = [score1,li[2],li[4]]
                         if score2 != 100:
                             print n2,score2
-                            final_score[n1] = [score2,li[4]]
+                            try:
+                                x = final_score[n1]
+                                if abs(int(x[1])-int(x[2])) < abs(int(li[2])-int(li[4])):
+                                    final_score[n1] = x
+                                elif abs(int(x[1])-int(x[2])) == abs(int(li[2])-int(li[4])):
+                                    if float(x[0]) >= float(score2):
+                                        final_score[n1] = x
+                                    else:
+                                        final_score[n1] = [score2,li[2],li[4]]
+                                else:
+                                    final_score[n1] = [score2,li[2],li[4]]
+                            except KeyError:
+                                final_score[n1] = [score2,li[2],li[4]]
                     else:
                         print 'The scores are not present for ' + n1 + ' and ' + n2
 
@@ -295,16 +362,17 @@ def check_for_noun_adj(depend_dict, pos_dict):
             if 'dobj' in li[0]:
                 n1 = li[1]
                 n2 = li[3]
+                m1, m2 = check_for_negative(n1,n2)
                 t1 = pos_dict[n1]
                 t2 = pos_dict[n2]
                 score1 = 100
                 score2 = 100
                 try:
-                    score1 = sd[n1.lower()]
+                    score1 = sd[n1.lower()] * m1
                 except KeyError:
                     pass
                 try:
-                    score2 = sd[n2.lower()]
+                    score2 = sd[n2.lower()] * m2
                 except KeyError:
                     pass
                 if score1 != 100 or score2 != 100:
@@ -318,54 +386,38 @@ def check_for_noun_adj(depend_dict, pos_dict):
                         else:
                             print 'no noun occurance'
 
-                        try:
-                            x = final_score[n1]
-                        except KeyError:
-                            if score2 != 100:
-                                final_score[n1] = [score2,'DIRECT OBJECT...']
-                        try:
-                            x = final_score[n2]
-                        except KeyError:
-                            if score1 != 100:
-                                final_score[n2] = [score1,'DIRECT OBJECT...']
 
+                        if score2 != 100:
+                            apply_score(li,n1,score2,final_score)
+                        if score1 != 100:
+                            apply_score(li,n2,score1,final_score)
 
                     else:
                         print '-----------stopwords-----------'
 
+            # check if compound word present
 
-
-
-
-                    # if ('NN' in t1 and 'JJ' in t2) or ('NN' in t2 and 'JJ' in t1):
-                    #   print n1 + ' and ' + n2 + ' appear to be meaningful'
-                    # else:
-                    #   try:
-                    #       score1 = sd[n1]
-                    #   except KeyError:
-                    #       pass
-                    #   try:
-                    #       score2 = sd[n2]
-                    #   except KeyError:
-                    #       pass
-                    #   if score1 != 100 or score2 != 100:
-                    #       print n1 + ' and ' + n2 + ' also appear to be meaningful'
-
-
-                # try:
-                #   print n1 + '-->' + sd[n1]
-                # except KeyError:
-                #   pass
-                # try:
-                #   print n2 + '-->' + sd[n2]
-                # except KeyError:
-                #   pass
 
 
 def preprocess(review):
     review = check_for_it(review)
     review = split_sent(review)
     return review
+
+
+def replace_with_compoundword(score,dic):
+
+    for key in score.keys():
+        for k in dic.keys():
+            if key in k:
+                x = score[key]
+                del score[key]
+                score[k] = x
+        # for (path, value) in dpath.util.search(dic,word.lower(), yielded=True):
+        #     print path , value
+        #     print 'yes'
+    # pass
+    
 
 
     # elif 'VB' in tagged[i][1] and len(swn.senti_synsets(tagged[i][0],'v'))>0:
@@ -417,14 +469,18 @@ nrev8 = "I'm a big fan of the hauz khas social. So I definitely wanted to try th
 ww = "The food tastes good"
 qq = "The food was not good."
 ss = "Spring rolls were just fine and their chicken drumsticks are hands down the best you can ever taste. However the noodles left me a bit unsatisfied and were below their usual standardself."
-tokens = word_tokenize(nrev)
+tokens = word_tokenize(rev6)
 t = word_tokenize(rev2)
 
 
-sent = preprocess(rev9)
-dp,dd = typedependencies(sent)
+sent = preprocess(qq)
+dp,dd = typedependencies(nrev7)
 check_for_noun_adj(dp,dd)
+for i in range(len(compound_word_list)):
+    compound_word_dic[compound_word_list[i]] = 1
+replace_with_compoundword(final_score,compound_word_dic)
 print final_score
+
 # getting_namedentity(sent)
 
 

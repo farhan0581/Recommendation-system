@@ -48,27 +48,28 @@ reader = csv.reader(open('data/zomato_dishes.csv','r'))
 for row in reader:
 	dishdic[row[0]] = row[1]
 
-print len(dishdic)
+# print len(dishdic)
 dish = "chicken curry mughlai."
 m = re.search(r'curr',dish)
 if m:
-	print m.group(0)
-	print m.string
+	# print m.group(0)
+	# print m.string
+	pass
 
-# for (path, value) in dpath.util.search(dishdic, 'chicken curry mughl*', yielded=True):
-# 	print path , value
-# print m.group(0)
+for (path, value) in dpath.util.search(dishdic, 'chicken cur*', yielded=True):
+	print path , value
+
 
 # dic = {'1':'dasd','2':'asdf','3':'sdv'}
 # dic = collections.OrderedDict(dic)
 # x = dic._OrderedDict_map['2']
 # for k,v in dic.items():
 # 	print k.next
-j = 0
-for i in range(j,10):
-	print i
-	j = i + 2
-x = 0
-while x < 10:
-	print x 
-	x = x + 2
+# j = 0
+# for i in range(j,10):
+# 	print i
+# 	j = i + 2
+# x = 0
+# while x < 10:
+# 	print x 
+# 	x = x + 2

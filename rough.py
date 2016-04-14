@@ -3,7 +3,7 @@ import json
 import csv
 import pprint
 from bs4 import BeautifulSoup
-import os,sys
+import os,sys,re
 
 # finding the restaurants at a locality
 # headers = {'user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 \
@@ -56,9 +56,16 @@ import os,sys
 # 		rating = x.find('div',{'class':'ttupper'})
 # 		print rating['aria-label']
 # 		print '----------------'
-data = {'filter':'{"veg":"0","deliverable":["101","DLF Cyber City"]}'}
+# data = {'filter':'{"veg":"0","deliverable":["101","DLF Cyber City"]}'}
 
-r = requests.post('http://ec2-54-201-233-108.us-west-2.compute.amazonaws.com/production/main',data=data)
-print r.headers
-
+# r = requests.post('http://ec2-54-201-233-108.us-west-2.compute.amazonaws.com/production/main',data=data)
+# print r.headers
+dic = {'my':1,'farhan':2}
+lis = ['my','name','is','chicken curry']
+# m = re.search(r'curr',lis)
+if 'chicken' in lis:
+	print 'yes'
 	
+for k,v in dic.items():
+	if 'far' in k:
+		print k

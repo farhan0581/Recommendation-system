@@ -7,3 +7,4 @@ loved	4
 recommend	4
 high	-2
 measly	-3
+pre-decided 3
