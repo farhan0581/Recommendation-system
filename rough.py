@@ -70,9 +70,26 @@ import os,sys,re
 # 	if 'far' in k:
 # 		print k
 
+writer = csv.writer(open('data/final_train.csv','w'))
 
-handle = open('manual_test_data.csv','r')
+handle = open('/home/farhan/manual_test_data.csv','r')
 reader = csv.DictReader(handle)
 for row in reader:
-	if row['Modified Tag'] == 'cost':
-		print row['Review']
+	writer.writerow([row['Review'].strip(),row['Modified Tag']])
+handle.close()
+handle = open('data/farhan.csv','r')
+reader = csv.DictReader(handle)
+for row in reader:
+	writer.writerow([row['review'].strip(),'cost'])
+handle.close()
+handle = open('data/shabaz.csv','r')
+reader = csv.DictReader(handle)
+for row in reader:
+	writer.writerow([row['review'].strip(),'cost'])
+handle.close()
+handle = open('data/habib.csv','r')
+reader = csv.DictReader(handle)
+for row in reader:
+	writer.writerow([row['review'].strip(),'cost'])
+handle.close()
+

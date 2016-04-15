@@ -29,7 +29,7 @@ import dpath.util
 
 def split_sent(sentence):
     sentence = re.split('[.?!]',sentence)
-    sentence = [x for x in sentence if x!='']
+    sentence = [x.lower() for x in sentence if x!='']
     return sentence 
 # x = 'extra'
 # print swn.senti_synsets(x,'n')[0]
@@ -63,13 +63,15 @@ for row in reader:
 print dishdic
 # Ardor _reviews.csv
 count = 0
-r = csv.DictReader(open('data/reviews/Ardor _reviews.csv','r'))
+ww = csv.writer(open('data/farhan2.csv','w'))
+r = csv.DictReader(open('data/reviews/Dunkin\' Donuts _reviews.csv','r'))
 for rr in r:
 	sent = split_sent(rr['Review'])
 	for key in dishdic.keys():
 		for i in range(len(sent)):	
 			if key in sent[i]:
 				print sent[i]
+				ww.writerow([sent[i].strip()])
 				count = count + 1
 				print '============================='
 

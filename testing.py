@@ -26,7 +26,7 @@ from operator import itemgetter
 import itertools
 import collections
 import dpath.util
-
+from classifier import get_classifier
 
 java_path = "/usr/lib/jvm/java-8-oracle/jre/bin/java"  # replace this
 os.environ['JAVAHOME'] = java_path
@@ -126,7 +126,7 @@ def getting_namedentity(sent):
         getting_sentiment(tokenized)
         # print tokenized
         namedent = nltk.ne_chunk(tokenized, binary=True)
-        print '\n##################### Named Entity Recognition#############'
+        print '\n##################### Named Entity Recognition #############'
         print namedent
         print '========================================================'
 
@@ -478,6 +478,11 @@ for i in range(len(compound_word_list)):
 replace_with_compoundword(final_score,compound_word_dic)
 print final_score
 
+r = []
+for key in final_score.keys():
+    r.append(key)
+
+print get_classifier(r)
 # getting_namedentity(sent)
 
 
@@ -581,10 +586,3 @@ print final_score
 # stanford_jars = find_jars_within_path(stanford_dir)
 # st.stanford_jar = ':'.join(stanford_jars)
 # [parse.tree() for parse in dep_parser.raw_parse("The quick brown fox jumps over the lazy dog.")]
-
-
-food=['cuisine','taste','starter','menu','meal','dessert','kitchen','pizza','dish','quantity','spread','chef','ingredient','food','flavour']
-service=['service','waiter','staff','delivery','check','reservation','host','counter','serve','table']
-price=['cost','price','overpriced','free','money','bargain','paisa',]
-ambience=['ambience','ambiance','decor','design','atmosphere','environment',        
-        'setting','crowd','interior','music','sitting']
