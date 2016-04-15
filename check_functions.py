@@ -27,6 +27,10 @@ import itertools
 import collections
 import dpath.util
 
+def split_sent(sentence):
+    sentence = re.split('[.?!]',sentence)
+    sentence = [x for x in sentence if x!='']
+    return sentence 
 # x = 'extra'
 # print swn.senti_synsets(x,'n')[0]
 
@@ -58,14 +62,18 @@ for row in reader:
 # 	pass
 print dishdic
 # Ardor _reviews.csv
+count = 0
 r = csv.DictReader(open('data/reviews/Ardor _reviews.csv','r'))
 for rr in r:
+	sent = split_sent(rr['Review'])
 	for key in dishdic.keys():
-		if key in rr['Review']:
-			print rr['Username'],rr['Review']
-			print '============================='
+		for i in range(len(sent)):	
+			if key in sent[i]:
+				print sent[i]
+				count = count + 1
+				print '============================='
 
-
+print count
 # for (path, value) in dpath.util.search(dishdic, 'cost*', yielded=True):
 # 	print path , value
 
