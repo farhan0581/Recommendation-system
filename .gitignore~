@@ -3,4 +3,5 @@ stanford-corenlp-full-2015-12-09/*
 #to ignore compile versions
 *.pyc
 *.py~
-#to ignore the reviews
+data/final_train.csv
+

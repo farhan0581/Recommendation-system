@@ -4,4 +4,4 @@ stanford-corenlp-full-2015-12-09/*
 *.pyc
 *.py~
 data/final_train.csv
-
+data/saved/*
