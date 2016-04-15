@@ -60,12 +60,19 @@ import os,sys,re
 
 # r = requests.post('http://ec2-54-201-233-108.us-west-2.compute.amazonaws.com/production/main',data=data)
 # print r.headers
-dic = {'my':1,'farhan':2}
-lis = ['my','name','is','chicken curry']
-# m = re.search(r'curr',lis)
-if 'chicken' in lis:
-	print 'yes'
+# dic = {'my':1,'farhan':2}
+# lis = ['my','name','is','chicken curry']
+# # m = re.search(r'curr',lis)
+# if 'chicken' in lis:
+# 	print 'yes'
 	
-for k,v in dic.items():
-	if 'far' in k:
-		print k
+# for k,v in dic.items():
+# 	if 'far' in k:
+# 		print k
+
+
+handle = open('manual_test_data.csv','r')
+reader = csv.DictReader(handle)
+for row in reader:
+	if row['Modified Tag'] == 'cost':
+		print row['Review']

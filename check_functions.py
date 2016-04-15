@@ -44,20 +44,30 @@ if 'farhan' in li:
 
 dishdic = {}
 
-reader = csv.reader(open('data/zomato_dishes.csv','r'))
+reader = csv.DictReader(open('data/trainfile.csv','r'))
 for row in reader:
-	dishdic[row[0]] = row[1]
+	if row['index'] == '3':
+		dishdic[row['name']] = row['index']
 
 # print len(dishdic)
-dish = "chicken curry mughlai."
-m = re.search(r'curr',dish)
-if m:
-	# print m.group(0)
-	# print m.string
-	pass
+# dish = "chicken curry mughlai."
+# m = re.search(r'curr',dish)
+# if m:
+# 	# print m.group(0)
+# 	# print m.string
+# 	pass
+print dishdic
+# Ardor _reviews.csv
+r = csv.DictReader(open('data/reviews/Ardor _reviews.csv','r'))
+for rr in r:
+	for key in dishdic.keys():
+		if key in rr['Review']:
+			print rr['Username'],rr['Review']
+			print '============================='
 
-for (path, value) in dpath.util.search(dishdic, 'chicken cur*', yielded=True):
-	print path , value
+
+# for (path, value) in dpath.util.search(dishdic, 'cost*', yielded=True):
+# 	print path , value
 
 
 # dic = {'1':'dasd','2':'asdf','3':'sdv'}

@@ -1,4 +1,70 @@
 name,index
+toilets,2
+toilet,2
+spacious,2
+decoratred,2
+interiors,2
+roof,2
+indoor lounge,2
+outing,2
+outdoor,2
+open area,2
+open-area,2
+dine-area,2
+dine area,2
+house,2
+top sitting,2
+interior designing,2
+cafe,2
+dance floor,2
+bar,2
+amenities,2
+location,2
+designed,2
+sitting-arrangement,2
+sitting arrangement,2
+chair,2
+chairs,2
+artifects,2
+roof sitting,2
+view,2
+presentation,2
+ventilation,2
+balcony,2
+outdoor seating,2
+outdoor sitting,2
+bar-lounge lighting,2
+parikrama's view,2
+open terrace,2
+sitting area,2
+seating area,2
+dim lighting,2
+outdoor patio,2
+restaurant area,2
+roof top,2
+sitting location,2
+terrace area,2
+opening balcony,2
+washroom,2
+washrooms,2
+open spaces,2
+dancing floor,2
+fine dining,2
+stock market,2
+stock exchange,2
+display,2
+displays,2
+wall arts,2
+wallarts,2
+inside sitting,2
+inside seating,2
+outside board,2
+booths,2
+couches,2
+sofa,2
+furniture,2
+cushioned chairs,2
+bar stool,2
 ambience,2
 ambiance,2
 decor,2
@@ -13,6 +79,15 @@ interior,2
 music,2
 sitting,2
 cost,3
+bill,3
+wallet,3
+expense,3
+expenses,3
+expensive,3
+pocket,3
+discount,3
+paisa wasool,3
+rates,3
 price,3
 overpriced,3
 free,3
@@ -20,6 +95,47 @@ money,3
 bargain,3
 paisa,3
 service,4
+hopitality,4
+serves,4
+owner,4
+dj,4
+arrangement,4
+managemant,4
+prior booking,4
+booking,4
+reservation,4
+time frame,4
+behaviour,4
+behaviours,4
+lady staff,4
+packages,4
+romantic packages,4
+deals,4
+mandolin player,4
+bartenders,4
+attendant,4
+attendants,4
+bollywood members,4
+chef,4
+host,4
+club,4
+artist,4
+singer,4
+customer service,4
+musician,4
+billing,4
+tv,4
+deals,4
+scrollers,4
+staff team,4
+party,4
+birthday party,4
+marriage party,4
+kitty party,4
+dinner party,4
+hookah,4
+jukebox,4
+sound system,4
 waiter,4
 staff,4
 delivery,4
@@ -30,23 +146,46 @@ counter,4
 serve,4
 table,4
 food,1
-bhuna paneer kebab masala,1
-veg biryani,1
-veg kebab bum biryani,1
-chicken biryani,1
-peshawari murg biryani,1
-chatpata aloo 65 roll,1
-chatpata aloo 65,1
-bhuna chicken kebab masala,1
-hyderabadi chicken boneless kebab,1
-bhuna mutton kebab masala,1
-mutton biryani,1
-chicken dumpukth korma,1
-dum ka mutton korma,1
-butter paneer,1
-dal nizami,1
-spicy veg parantha roll,1
-rot,1
-fried silken tofu in hot garlic sauce,1
-mapu tofu,1
-steam rice,1
+dinner date,1
+meal,1
+cuisines,1
+snacks,2
+snack,1
+cuisine,1
+drinks,1
+cocktails,1
+mocktails,1
+starter,1
+stuff,1
+menu,1
+mains,1
+desserts,1
+dessert,1
+main course,1
+beverages,1
+soft drinks,1
+wine,1
+wines,1
+veg platters,1
+veg,1
+non veg,1
+prawns,1
+sauce,1
+sweets,1
+ice cream,1
+ice-cream,1
+gravy,1
+fries,1
+marinated,1
+place,0
+experience,0
+destination,0
+restaurant,0
+hangout,0
+space,0
+time,0
+outlet,0
+quantity,0
+quality,0
+concept,0
+concepts,0

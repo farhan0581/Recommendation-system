@@ -413,10 +413,6 @@ def replace_with_compoundword(score,dic):
                 x = score[key]
                 del score[key]
                 score[k] = x
-        # for (path, value) in dpath.util.search(dic,word.lower(), yielded=True):
-        #     print path , value
-        #     print 'yes'
-    # pass
     
 
 
@@ -472,12 +468,13 @@ ss = "Spring rolls were just fine and their chicken drumsticks are hands down th
 tokens = word_tokenize(rev6)
 t = word_tokenize(rev2)
 
-
-sent = preprocess(qq)
-dp,dd = typedependencies(nrev7)
+sent = preprocess(nrev7)
+dp,dd = typedependencies(sent)
 check_for_noun_adj(dp,dd)
+
 for i in range(len(compound_word_list)):
     compound_word_dic[compound_word_list[i]] = 1
+
 replace_with_compoundword(final_score,compound_word_dic)
 print final_score
 

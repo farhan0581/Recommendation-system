@@ -5,8 +5,8 @@ if __name__ == '__main__':
     nlp = StanfordCoreNLP('http://localhost:9000')
     # text = "Non tolerance was gandhijis weapon."
     # text = ("We went to pitapit,it can be expensive but not hygienic.")
-    text = ("A good pocket friendly chinese or thai restaurant in CP")
-    # text = ("The sitting which is mostly outdoor is the prettiest you can come across in CP")
+    # text = ("A good pocket friendly chinese or thai restaurant in CP")
+    text = ("The sitting which is mostly outdoor is the prettiest you can come across in CP")
     # text = ('I loved The Crispy Vegetables but found the Wontons to be devoid of any flavor')
     # text = ("delicious veg manchurian.")
     # text = ('London is good at studies but bad at sports.')
