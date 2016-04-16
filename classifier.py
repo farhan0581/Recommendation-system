@@ -10,6 +10,28 @@ from numpy import array
 from sklearn.externals import joblib
 
 
+def get_lookup_dict():
+
+	result = {}
+	handle = open('data/trainfile.csv','r')
+	reader = csv.DictReader(handle)
+	for row in reader:
+		if row['index'] == '0':
+			tag = 'general'
+		elif row['index'] == '1':
+			tag = 'food'
+		elif row['index'] == '2':
+			tag = 'ambience'
+		elif row['index'] == '3':
+			tag = 'cost'
+		elif row['index'] == '4':
+			tag = 'service'
+
+		result[row['name']] = tag
+	return result
+
+
+
 def get_classifier(docs_new):
 	"""function which returns classifier"""
 
@@ -78,22 +100,42 @@ def get_classifier(docs_new):
 	print accuracy*100
 	print accuracy_knn*100
 
-	# clf_kfold = joblib.load('data/saved/clf_kfold.pkl')
-
 	doc_pre=clf_kfold.predict(docs_new_tfidf)
+	# print docs_new_tfidf.shape
+	# print full_set_fit_tfidf.shape
+	# (10, 6689)
+	# (9693, 6689)
+	result = {}
+	for i in range(len(docs_new)):
+		result[docs_new[i]] = doc_pre[i]
+
+	joblib.dump(clf_kfold, 'data/saved/clf_kfold.pkl') 
+	joblib.dump(count_vectorizer.vocabulary_,'data/saved/dict.pkl')
+
+	return result
+
+def get_trained_classifier(docs_new):
+
+	# need to save the classifier as well as the size dictionary
+	# to avoid any size mismatch error
+	clf_kfold = joblib.load('data/saved/clf_kfold.pkl')
+	dic = joblib.load('data/saved/dict.pkl')
+
+	count_vectorizer = CountVectorizer(stop_words='english',vocabulary=dic)
+	full_set_fit=count_vectorizer.fit_transform(docs_new)
+
+	tfidf_transformer = TfidfTransformer(use_idf=True)
+	full_set_fit_tfidf = tfidf_transformer.fit_transform(full_set_fit)
+
+	doc_pre=clf_kfold.predict(full_set_fit_tfidf)
 
 	result = {}
 	for i in range(len(docs_new)):
-		# print doc_pre[i]
-		# if doc_pre[i]==1:
-		# 	print docs_new[i]+"--> Veg"
-		# elif doc_pre[i]==0:
-		# print docs_new[i] + '-->' + doc_pre[i]
 		result[docs_new[i]] = doc_pre[i]
 
 	return result
 
-	# joblib.dump(clf_kfold, 'data/saved/clf_kfold.pkl') 
+
 
 	# precision=metrics.precision_score(y_test, predicted)
 	# recall=metrics.recall_score(y_test, predicted)
@@ -106,11 +148,17 @@ def get_classifier(docs_new):
 	# freq_term_matrix = count_vectorizer.transform(train_set)
 	# print freq_term_matrix.todense()
 
-docs_new = ['The sitting which is mostly outdoor is the prettiest you can come across in CP',
-			'Check out the pics to find out who greeted me on my first visit to Bercos CP branch, it can be expensive but not hygienic',
-			'the restaurant declined to honour citibank offer of 15% off on the bill value with the reason that bill is generated',
-			'ambiance','cocktails','dj system','menu','starter',
-				'drinks','plate','costly','priced high','bill was burden on pocket','bill',
-				'overpriced','OverPriced','resonable price','value for money']
 
-print get_classifier(docs_new)
+
+
+
+
+
+
+
+# docs_new = ['drinks','plate','costly','priced high','bill was burden on pocket','bill',
+# 				'overpriced','OverPriced','resonable price','value for money']
+
+# # print get_classifier(docs_new)
+# print get_trained_classifier(docs_new)
+# print get_lookup_dict()

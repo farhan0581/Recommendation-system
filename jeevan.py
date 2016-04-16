@@ -21,7 +21,8 @@ def parse_html(soup):
             album = tr.find('a',{'class':'link-block-target'}).getText()
             singer = singer.encode("ascii","ignore").strip()
             album = album.encode("ascii","ignore").strip()
-            result.append([singer,album])
+            album_number = tr.find('td',{'class':'chartlist-index'}).getText().strip()
+            result.append([singer,album,album_number])
         except:
             pass
     return result
@@ -46,7 +47,8 @@ def get_track_name():
     return result
 
 # to download and get the track
-def check_for_track(lis,artist,song):
+def check_for_track(lis,artist,song,album_number):
+    flag = 0
     for i in range(len(lis)):
         if (artist.lower() == lis[i]['artist'].lower() and
             song.lower() == lis[i]['trackName'].lower()):
@@ -54,9 +56,13 @@ def check_for_track(lis,artist,song):
             print lis[i]['trackName'].lower()
             download_url = lis[i]['previewUrl']
             print download_url
-            filename = str(artist) + '_' + str(song) + '.mp3'
+            filename = str(album_number) + '__' + str(artist) + '_' + str(song) + '.mp3'
             urllib.urlretrieve(download_url,filename=filename)
+            flag = 1
             break
+    if flag == 0:
+        print ('cannot download for ' + str(album_number) + '__' +
+         str(artist) + '_' + str(song)  + ' might be some issue...')
 
         
     # print artist,song
@@ -77,12 +83,12 @@ def main():
             # pprint.pprint(data)
             
             # print (data['tracksresult']['tracks'][0].get('previewUrl'))
-            check_for_track(data['tracksresult']['tracks'],track[0],track[1])
+            check_for_track(data['tracksresult']['tracks'],track[0],track[1],track[2])
             # urllib.urlretrieve((data['tracksresult']['tracks'][0].get('previewUrl')),
                         # filename=filename)
         except Exception as e:
             print(e)
-
+        break
 
 
 if __name__ == '__main__':

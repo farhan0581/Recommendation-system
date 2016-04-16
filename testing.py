@@ -468,7 +468,7 @@ ss = "Spring rolls were just fine and their chicken drumsticks are hands down th
 tokens = word_tokenize(rev6)
 t = word_tokenize(rev2)
 
-sent = preprocess(nrev7)
+sent = preprocess(rev1)
 dp,dd = typedependencies(sent)
 check_for_noun_adj(dp,dd)
 
@@ -479,8 +479,8 @@ replace_with_compoundword(final_score,compound_word_dic)
 print final_score
 
 r = []
-for key in final_score.keys():
-    r.append(key)
+for i in range(len(sent)):
+    r.append(sent[i])
 
 print get_classifier(r)
 # getting_namedentity(sent)
