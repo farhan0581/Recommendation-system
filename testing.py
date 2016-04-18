@@ -26,7 +26,8 @@ from operator import itemgetter
 import itertools
 import collections
 import dpath.util
-from classifier import get_classifier
+from classifier import get_lookup_dict,get_trained_classifier,check_in_dic
+from final_scores import final_scores
 
 java_path = "/usr/lib/jvm/java-8-oracle/jre/bin/java"  # replace this
 os.environ['JAVAHOME'] = java_path
@@ -72,6 +73,7 @@ def compound_word(li):
                 st = ''
                 break
     return word
+
 
 # checking for it and break on that basis
 def check_for_it(sentence):
@@ -307,11 +309,11 @@ def check_for_noun_adj(depend_dict, pos_dict):
                      and n2.lower() not in stopwords):
                     # check if tags have a score...
                     try:
-                        score1 = int(sd[n1.lower()]) * int(m1)
+                        score1 = float(sd[n1.lower()]) * float(m1)
                     except KeyError:
                         pass
                     try:
-                        score2 = int(sd[n2.lower()]) * int(m2)
+                        score2 = float(sd[n2.lower()]) * float(m2)
                     except KeyError:
                         pass
                     if score1 != 100 or score2 != 100:
@@ -468,7 +470,7 @@ ss = "Spring rolls were just fine and their chicken drumsticks are hands down th
 tokens = word_tokenize(rev6)
 t = word_tokenize(rev2)
 
-sent = preprocess(rev1)
+sent = preprocess(nrev6)
 dp,dd = typedependencies(sent)
 check_for_noun_adj(dp,dd)
 
@@ -479,10 +481,17 @@ replace_with_compoundword(final_score,compound_word_dic)
 print final_score
 
 r = []
-for i in range(len(sent)):
-    r.append(sent[i])
+for key in final_score.keys():
+    r.append(key)
 
-print get_classifier(r)
+
+
+print get_trained_classifier(r,final_score)
+final_scores(final_score)
+
+
+
+
 # getting_namedentity(sent)
 
 

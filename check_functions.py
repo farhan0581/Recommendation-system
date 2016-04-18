@@ -31,8 +31,8 @@ def split_sent(sentence):
     sentence = re.split('[.?!]',sentence)
     sentence = [x.lower() for x in sentence if x!='']
     return sentence 
-# x = 'extra'
-# print swn.senti_synsets(x,'n')[0]
+x = 'unapologetic'
+print swn.senti_synsets(x,'n')[0]
 
 # li = ['R','A']
 # if li in 'A':
@@ -76,6 +76,10 @@ for rr in r:
 				print '============================='
 
 print count
+
+
+
+
 # for (path, value) in dpath.util.search(dishdic, 'cost*', yielded=True):
 # 	print path , value
 

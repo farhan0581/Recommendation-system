@@ -8,6 +8,7 @@ import csv
 import numpy as np
 from numpy import array
 from sklearn.externals import joblib
+import dpath.util
 
 
 def get_lookup_dict():
@@ -29,6 +30,22 @@ def get_lookup_dict():
 
 		result[row['name']] = tag
 	return result
+
+
+
+def check_in_dic(string):
+	"""function which performs search on 
+		the dish dictionary"""
+	handle = open('data/zomato_dishes.csv','r')
+	reader = csv.DictReader(handle)
+	dish = {}
+	for row in reader:
+		dish[row['dish'].lower()] = row['index']
+
+	search_string = string.lower() + '*'
+	for (path, value) in dpath.util.search(dish, search_string, yielded=True):
+		return path
+
 
 
 
@@ -114,7 +131,7 @@ def get_classifier(docs_new):
 
 	return result
 
-def get_trained_classifier(docs_new):
+def get_trained_classifier(docs_new,original):
 
 	# need to save the classifier as well as the size dictionary
 	# to avoid any size mismatch error
@@ -131,7 +148,9 @@ def get_trained_classifier(docs_new):
 
 	result = {}
 	for i in range(len(docs_new)):
-		result[docs_new[i]] = doc_pre[i]
+		x = original[docs_new[i]]
+		x.append(doc_pre[i])
+		result[docs_new[i]] = x
 
 	return result
 
@@ -162,3 +181,5 @@ def get_trained_classifier(docs_new):
 # # print get_classifier(docs_new)
 # print get_trained_classifier(docs_new)
 # print get_lookup_dict()
+
+print check_in_dic('butter chicken')
