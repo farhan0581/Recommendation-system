@@ -29,6 +29,7 @@ import dpath.util
 from classifier import get_lookup_dict,get_trained_classifier,check_in_dic
 from final_scores import final_scores
 
+
 java_path = "/usr/lib/jvm/java-8-oracle/jre/bin/java"  # replace this
 os.environ['JAVAHOME'] = java_path
 
@@ -42,6 +43,9 @@ final_score = {}
 compound_word_dic = {}
 compound_word_list = []
 neg_words = []
+
+
+# checking for any dish present...
 
 
 # combine compound word
@@ -242,24 +246,35 @@ def typedependencies(sent_list):
                 compound_word_list.append(w[jj])
     print '--------NAMES------' + str(proper_names)
     print '--------NEGATIVE----' + str(neg_words)
-    return depend_dict,pos_dict
+    return depend_dict,pos_dict,proper_names
 
-def apply_score(li,n,score,final_score):
+def apply_score(li,n,score,final_score,meaning):
     try:
         x = final_score[n]
-        if abs(int(x[1])-int(x[2])) < abs(int(li[2])-int(li[4])):
+        if ((abs(int(x[1])-int(x[2])) < abs(int(li[2])-int(li[4])))
+                and (meaning != 1 and meaning != 2)):
             final_score[n] = x
+
         elif abs(int(x[1])-int(x[2])) == abs(int(li[2])-int(li[4])):
         
-            if float(x[0]) >= float(score1):
+            if float(x[0]) >= float(score):
                 final_score[n] = x
             else:   
-                final_score[n] = [score,li[2],li[4]]
+                final_score[n] = [score,li[2],li[4],meaning]
+
+        elif abs(int(x[1])-int(x[2])) > abs(int(li[2])-int(li[4])):
+            print '===here'
+            if meaning == 2:
+                final_score[n] = [score,li[2],li[4],meaning]
+            elif meaning == 1:
+                pass
+            elif meaning == 0:
+                pass
         else:
-            final_score[n] = [score,li[2],li[4]]
+            final_score[n] = [score,li[2],li[4],meaning]
 
     except KeyError:
-        final_score[n] = [score,li[2],li[4]]
+        final_score[n] = [score,li[2],li[4],meaning]
 
     # return final_score
 
@@ -290,6 +305,7 @@ def check_for_noun_adj(depend_dict, pos_dict):
             score2 = 100
             li = value[j]
             if li[0] == "nsubj" or "mod" in li[0]:
+                meaning = 0
                 n1 = li[1]
                 n2 = li[3]
                 m1, m2 = check_for_negative(n1,n2)
@@ -319,44 +335,20 @@ def check_for_noun_adj(depend_dict, pos_dict):
                     if score1 != 100 or score2 != 100:
                         if 'NN' in t1 or 'NN' in t2:
                             if 'JJ' in t1 or 'JJ' in t2:
+                                meaning = 2
                                 print n1 + ' and ' + n2 + ' appear to be  meaningful...'
                             else:
                                 print n1 + ' and ' + n2 + ' appear to be less meaningful...'
+                                meaning = 1
                         else:
                             print n1 + ' and ' + n2 + ' appear to be very less meaningful'
+                            meaning = 0
                         if score1 != 100:
+                            apply_score(li,n2,score1,final_score,meaning)
                             print n1,score1
-                            try:
-                                x = final_score[n2]
-                                print x
-                                if abs(int(x[1])-int(x[2])) < abs(int(li[2])-int(li[4])):
-                                    final_score[n2] = x
-                                elif abs(int(x[1])-int(x[2])) == abs(int(li[2])-int(li[4])):
-                                
-                                    if float(x[0]) >= float(score1):
-                                        final_score[n2] = x
-                                    else:   
-                                        final_score[n2] = [score1,li[2],li[4]]
-                                else:
-                                    final_score[n2] = [score1,li[2],li[4]]
-
-                            except KeyError:
-                                final_score[n2] = [score1,li[2],li[4]]
                         if score2 != 100:
                             print n2,score2
-                            try:
-                                x = final_score[n1]
-                                if abs(int(x[1])-int(x[2])) < abs(int(li[2])-int(li[4])):
-                                    final_score[n1] = x
-                                elif abs(int(x[1])-int(x[2])) == abs(int(li[2])-int(li[4])):
-                                    if float(x[0]) >= float(score2):
-                                        final_score[n1] = x
-                                    else:
-                                        final_score[n1] = [score2,li[2],li[4]]
-                                else:
-                                    final_score[n1] = [score2,li[2],li[4]]
-                            except KeyError:
-                                final_score[n1] = [score2,li[2],li[4]]
+                            apply_score(li,n1,score2,final_score,meaning)
                     else:
                         print 'The scores are not present for ' + n1 + ' and ' + n2
 
@@ -390,9 +382,9 @@ def check_for_noun_adj(depend_dict, pos_dict):
 
 
                         if score2 != 100:
-                            apply_score(li,n1,score2,final_score)
+                            apply_score(li,n1,score2,final_score,1)
                         if score1 != 100:
-                            apply_score(li,n2,score1,final_score)
+                            apply_score(li,n2,score1,final_score,1)
 
                     else:
                         print '-----------stopwords-----------'
@@ -465,29 +457,34 @@ nrev6 = "Very unapologetic staff.. I went there on 3rd April got a big METAL pie
 nrev7 = "This place has turned into SHIT recently. No wonder nobody comes there even on weekends. I went there along with my family and friends on Sunday. I was surprised to see there were no customers. We went inside. It took them 10 minutes to bring the menu.We ordered something on which they asked for the Photo ID on which I produced it to them. Later on they started demanding the ID for everyone. Such a redeculious behaviour. The waiter kept arguing on which we requested him to call the manager. Manager came and repeated his lines like a parrot without logic. 3 out of 5 of us showed him our IDs. Its not necessary for everyone to carry an ID. They kept on arguing for each members ID and refused to serve. Such a insult to a customer. We left the place without having anything. PLEASE DON'T VISIT IT. - Yes, this is coming from a frequent visitor of this place. I have been here about more than 50 times and liked this place. BUT it has turned into horrible place with lack of customer service. Looks like they are no more interested in Restaurant Business. AVOID BERCOS CP Outlet."
 nrev8 = "I'm a big fan of the hauz khas social. So I definitely wanted to try this one. The food was definitely below average. We tried the Mezze platter and it was the worst Mediterranean food I've had. Management was sufficiently apologetic and asked for feedback on the comments card. The thing that put me off was that the chef came out and started arguing with us and insisting that his food was perfect. He has no compulsion to implement our suggestions, but actually coming out and fighting was too much. Definitely not going again."
 ww = "The food tastes good"
-qq = "The food was not good."
+qq = "The sitting which is mostly outdoor is the prettiest you can come across in CP."
 ss = "Spring rolls were just fine and their chicken drumsticks are hands down the best you can ever taste. However the noodles left me a bit unsatisfied and were below their usual standardself."
+
 tokens = word_tokenize(rev6)
 t = word_tokenize(rev2)
 
-sent = preprocess(nrev6)
-dp,dd = typedependencies(sent)
+sent = preprocess(nrev3)
+dp,dd,names = typedependencies(sent)
 check_for_noun_adj(dp,dd)
 
 for i in range(len(compound_word_list)):
     compound_word_dic[compound_word_list[i]] = 1
 
+print compound_word_dic
 replace_with_compoundword(final_score,compound_word_dic)
 print final_score
 
+
 r = []
-for key in final_score.keys():
+dish_score = {}
+for key,value in final_score.items():
     r.append(key)
-
-
 
 print get_trained_classifier(r,final_score)
 final_scores(final_score)
+# get_dish_names(r,)
+
+print dish_score
 
 
 

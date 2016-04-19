@@ -26,14 +26,58 @@ from operator import itemgetter
 import itertools
 import collections
 import dpath.util
+from classifier import get_classifier
+import xml.etree.ElementTree as ET
 
 def split_sent(sentence):
     sentence = re.split('[.?!]',sentence)
     sentence = [x.lower() for x in sentence if x!='']
     return sentence 
-x = 'unapologetic'
-print swn.senti_synsets(x,'n')[0]
 
+
+# x = 'prettiest'
+# stemmer3 = WordNetLemmatizer()
+# x = stemmer3.lemmatize(x,pos='a')
+# print x
+d = {}
+# print swn.senti_synsets(x,'n')[0]
+tree = ET.parse('/home/farhan/Downloads/ABSA15_RestaurantsTrain/ABSA-15_Restaurants_Train_Final.xml')
+root = tree.getroot()
+for child in root.findall('Review'):
+	sent = child.findall('sentences')
+	for ss in sent:
+		sents = ss.findall('sentence')
+		for x in sents:
+			text = x.findtext('text')
+			op = x.find('Opinions')
+			if op != None:
+				opinion = op.find('Opinion')
+				target = opinion.get('target')
+				cat = opinion.get('category')
+				plority = opinion.get('polarity')
+				if target != 'NULL' and cat == 'FOOD#QUALITY' and plority != 'NULL':
+					# print target
+					# print cat
+					# print plority
+					print text + ',price'
+					d[cat] = 1
+					# print '=========================='
+
+print d
+for s in d:
+	print s
+# RESTAURANT#PRICES
+# AMBIENCE#GENERAL111
+# SERVICE#GENERAL1111
+# LOCATION#GENERAL
+# DRINKS#QUALITY
+# FOOD#QUALITY
+# FOOD#PRICES111
+# RESTAURANT#MISCELLANEOUS
+# RESTAURANT#GENERAL
+# FOOD#STYLE_OPTIONS
+# DRINKS#PRICES
+# DRINKS#STYLE_OPTIONS
 # li = ['R','A']
 # if li in 'A':
 # 	print 'yes'
@@ -41,17 +85,17 @@ print swn.senti_synsets(x,'n')[0]
 # li = stopwords.words('english')
 # print len(li)
 # for l in li:
-# 	print l
-li = ['1','2','farhan']
-if 'farhan' in li:
-	print 'k'
+# # 	print l
+# li = ['1','2','farhan']
+# if 'farhan' in li:
+# 	print 'k'
 
-dishdic = {}
+# dishdic = {}
 
-reader = csv.DictReader(open('data/trainfile.csv','r'))
-for row in reader:
-	if row['index'] == '3':
-		dishdic[row['name']] = row['index']
+# reader = csv.DictReader(open('data/trainfile.csv','r'))
+# for row in reader:
+# 	if row['index'] == '3':
+# 		dishdic[row['name']] = row['index']
 
 # print len(dishdic)
 # dish = "chicken curry mughlai."
@@ -60,22 +104,22 @@ for row in reader:
 # 	# print m.group(0)
 # 	# print m.string
 # 	pass
-print dishdic
-# Ardor _reviews.csv
-count = 0
-ww = csv.writer(open('data/farhan2.csv','w'))
-r = csv.DictReader(open('data/reviews/Dunkin\' Donuts _reviews.csv','r'))
-for rr in r:
-	sent = split_sent(rr['Review'])
-	for key in dishdic.keys():
-		for i in range(len(sent)):	
-			if key in sent[i]:
-				print sent[i]
-				ww.writerow([sent[i].strip()])
-				count = count + 1
-				print '============================='
+# print dishdic
+# # Ardor _reviews.csv
+# count = 0
+# ww = csv.writer(open('data/farhan2.csv','w'))
+# r = csv.DictReader(open('data/reviews/Dunkin\' Donuts _reviews.csv','r'))
+# for rr in r:
+# 	sent = split_sent(rr['Review'])
+# 	for key in dishdic.keys():
+# 		for i in range(len(sent)):	
+# 			if key in sent[i]:
+# 				print sent[i]
+# 				ww.writerow([sent[i].strip()])
+# 				count = count + 1
+# 				print '============================='
 
-print count
+# print count
 
 
 
@@ -84,7 +128,7 @@ print count
 # 	print path , value
 
 
-# dic = {'1':'dasd','2':'asdf','3':'sdv'}
+dic = {'1':'dasd','2':'asdf','3':'sdv'}
 # dic = collections.OrderedDict(dic)
 # x = dic._OrderedDict_map['2']
 # for k,v in dic.items():
@@ -97,3 +141,17 @@ print count
 # while x < 10:
 # 	print x 
 # 	x = x + 2
+# 	x = x + 2
+# lis = []
+# reader = csv.DictReader(open('data/trainfile.csv','r'))
+# for row in reader:
+# 	lis.append(row['name'])
+# print lis
+# print get_classifier(lis)
+
+
+
+# if '1' in dic:
+# 	print 'fsdf'
+# {u'pay': [2.0, '5', '15'], u'%': [1.0, '11', '14'], u'Food': [1.0, '3', '1'], 
+# u'honour': ['1', '9', '11'], u'citibank offer': ['3', '9', '11'], u'money': [1.0, '7', '6'], u'staff': [2.0, '15', '18']}

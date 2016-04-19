@@ -11,6 +11,7 @@ from sklearn.externals import joblib
 import dpath.util
 
 
+
 def get_lookup_dict():
 
 	result = {}
@@ -42,7 +43,7 @@ def check_in_dic(string):
 	for row in reader:
 		dish[row['dish'].lower()] = row['index']
 
-	search_string = string.lower() + '*'
+	search_string = string.lower()
 	for (path, value) in dpath.util.search(dish, search_string, yielded=True):
 		return path
 
@@ -175,11 +176,11 @@ def get_trained_classifier(docs_new,original):
 
 
 
-# docs_new = ['drinks','plate','costly','priced high','bill was burden on pocket','bill',
-# 				'overpriced','OverPriced','resonable price','value for money']
+docs_new = ['drinks','plate','costly','priced high','bill was burden on pocket','bill',
+				'overpriced','OverPriced','resonable price','value for money']
 
-# # print get_classifier(docs_new)
+# print get_classifier(docs_new)
 # print get_trained_classifier(docs_new)
 # print get_lookup_dict()
 
-print check_in_dic('butter chicken')
+# print check_in_dic('')
