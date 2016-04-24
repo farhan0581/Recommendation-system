@@ -70,26 +70,34 @@ import os,sys,re
 # 	if 'far' in k:
 # 		print k
 
-writer = csv.writer(open('data/final_train.csv','w'))
+# writer = csv.writer(open('data/final_train.csv','w'))
 
-handle = open('/home/farhan/manual_test_data.csv','r')
-reader = csv.DictReader(handle)
-for row in reader:
-	writer.writerow([row['Review'].strip(),row['Modified Tag']])
-handle.close()
-handle = open('data/farhan.csv','r')
-reader = csv.DictReader(handle)
-for row in reader:
-	writer.writerow([row['review'].strip(),'cost'])
-handle.close()
-handle = open('data/shabaz.csv','r')
-reader = csv.DictReader(handle)
-for row in reader:
-	writer.writerow([row['review'].strip(),'cost'])
-handle.close()
-handle = open('data/habib.csv','r')
-reader = csv.DictReader(handle)
-for row in reader:
-	writer.writerow([row['review'].strip(),'cost'])
-handle.close()
+# handle = open('/home/farhan/manual_test_data.csv','r')
+# reader = csv.DictReader(handle)
+# for row in reader:
+# 	writer.writerow([row['Review'].strip(),row['Modified Tag']])
+# handle.close()
+# handle = open('data/farhan.csv','r')
+# reader = csv.DictReader(handle)
+# for row in reader:
+# 	writer.writerow([row['review'].strip(),'cost'])
+# handle.close()
+# handle = open('data/shabaz.csv','r')
+# reader = csv.DictReader(handle)
+# for row in reader:
+# 	writer.writerow([row['review'].strip(),'cost'])
+# handle.close()
+# handle = open('data/habib.csv','r')
+# reader = csv.DictReader(handle)
+# for row in reader:
+# 	writer.writerow([row['review'].strip(),'cost'])
+# handle.close()
 
+d = {0: [[u'ROOT', u'ROOT', '0', u'prettiest', '9'], [u'nsubj', u'prettiest', '9', u'The', '1'],
+	 [u'amod', u'The', '1', u'sitting', '2'], [u'nsubj', u'outdoor', '6', u'which', '3'],
+	  [u'advmod', u'outdoor', '6', u'mostly', '5'], [u'nsubj', u'come', '12', u'you', '10'],
+	   [u'nmod', u'come', '12', u'CP', '15']]} 
+
+s = 1
+if s:
+	print 'dsg'

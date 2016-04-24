@@ -28,6 +28,7 @@ import collections
 import dpath.util
 from classifier import get_classifier
 import xml.etree.ElementTree as ET
+import requests
 
 def split_sent(sentence):
     sentence = re.split('[.?!]',sentence)
@@ -35,37 +36,37 @@ def split_sent(sentence):
     return sentence 
 
 
-# x = 'prettiest'
-# stemmer3 = WordNetLemmatizer()
-# x = stemmer3.lemmatize(x,pos='a')
-# print x
+x = 'prettiest'
+stemmer3 = WordNetLemmatizer()
+x = stemmer3.lemmatize(x,pos='a')
+print x
 d = {}
-# print swn.senti_synsets(x,'n')[0]
-tree = ET.parse('/home/farhan/Downloads/ABSA15_RestaurantsTrain/ABSA-15_Restaurants_Train_Final.xml')
-root = tree.getroot()
-for child in root.findall('Review'):
-	sent = child.findall('sentences')
-	for ss in sent:
-		sents = ss.findall('sentence')
-		for x in sents:
-			text = x.findtext('text')
-			op = x.find('Opinions')
-			if op != None:
-				opinion = op.find('Opinion')
-				target = opinion.get('target')
-				cat = opinion.get('category')
-				plority = opinion.get('polarity')
-				if target != 'NULL' and cat == 'FOOD#QUALITY' and plority != 'NULL':
-					# print target
-					# print cat
-					# print plority
-					print text + ',price'
-					d[cat] = 1
-					# print '=========================='
+print swn.senti_synsets('prettiest','a')[0]
+# tree = ET.parse('/home/farhan/Downloads/ABSA15_RestaurantsTrain/ABSA-15_Restaurants_Train_Final.xml')
+# root = tree.getroot()
+# for child in root.findall('Review'):
+# 	sent = child.findall('sentences')
+# 	for ss in sent:
+# 		sents = ss.findall('sentence')
+# 		for x in sents:
+# 			text = x.findtext('text')
+# 			op = x.find('Opinions')
+# 			if op != None:
+# 				opinion = op.find('Opinion')
+# 				target = opinion.get('target')
+# 				cat = opinion.get('category')
+# 				plority = opinion.get('polarity')
+# 				if target != 'NULL' and cat == 'FOOD#QUALITY' and plority != 'NULL':
+# 					# print target
+# 					# print cat
+# 					# print plority
+# 					print text + ',price'
+# 					d[cat] = 1
+# 					# print '=========================='
 
-print d
-for s in d:
-	print s
+# print d
+# for s in d:
+# 	print s
 # RESTAURANT#PRICES
 # AMBIENCE#GENERAL111
 # SERVICE#GENERAL1111
@@ -122,6 +123,8 @@ for s in d:
 # print count
 
 
+# r = requests.get('http://www.google.co.in')
+# print r.remote_addr
 
 
 # for (path, value) in dpath.util.search(dishdic, 'cost*', yielded=True):
