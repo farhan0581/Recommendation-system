@@ -11,10 +11,10 @@ reader = csv.DictReader(hand)
 count = 1
 for row in reader:
 	review = row['Review']
-	# try:
-	food,service,ambience,cost = main_func(review)
-	writer.writerow([count,food,service,ambience,cost])
-	print food,service,ambience,cost
-# except:
-	print '==============='
+	try:
+		food,service,ambience,cost = main_func(review)
+		writer.writerow([count,food,service,ambience,cost])
+		print food,service,ambience,cost
+	except:
+		print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
 	count = count + 1

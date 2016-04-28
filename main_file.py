@@ -166,7 +166,7 @@ def typedependencies(sent_list):
     nlp = StanfordCoreNLP('http://localhost:9000')
     for i in range(len(sent_list)):
         compound_list = []
-        # print sent_list[i]
+        print sent_list[i]
         output = nlp.annotate(sent_list[i], properties={
                     'annotators': 'tokenize,ssplit,pos,depparse,parse,ner',
                     'outputFormat': 'json'
@@ -177,17 +177,7 @@ def typedependencies(sent_list):
         # pprint.pprint(x)
         # print '-------------------------------------------------'
         for j in range(len(x)):
-            
-            if ('mod' in x[j]['dep'] or 'nsubj' in x[j]['dep'] 
-                or 'advcl' in x[j]['dep'] or 'neg' in x[j]['dep'] or 'dobj'
-                 in x[j]['dep']):
-                # print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' + str(x[j]['governor']) 
-                #     + ' ' + x[j]['dependentGloss'] + '-' + str(x[j]['dependent']))
-                d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor']),
-                    x[j]['dependentGloss'],str(x[j]['dependent'])]
-                # depend_list.append(d)
-
-            
+         
             if 'compound' in x[j]['dep']:
                 # compound_word(x[j])
                 ll = [x[j]['governorGloss'],x[j]['governor'],
@@ -196,15 +186,6 @@ def typedependencies(sent_list):
                 compound_dic[x[j]['dependent']] = x[j]['dependentGloss']
                 # compound_list.append(ll)
 
-            if 'ROOT' in x[j]['dep']:
-                # print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-'
-                #         + str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] 
-                #         + '-' + str(x[j]['dependent']))
-                d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor'])
-                    ,x[j]['dependentGloss'],str(x[j]['dependent'])]
-                # depend_list.append(d)
-            # for root findings
-            # else:
             d = [x[j]['dep'],x[j]['governorGloss'],str(x[j]['governor'])
                 ,x[j]['dependentGloss'],str(x[j]['dependent'])]
             depend_list.append(d)
@@ -218,10 +199,7 @@ def typedependencies(sent_list):
                     neg_words.append(x1)
                 else:
                     neg_words.append(x2)
-                # if neg_word == 'neg':
-                #   neg_word = x[j]['dependentGloss']
-                #   neg_words.append(neg_word)
-                # print neg_word + ' is negative here.....'
+
             if 'conj' in x[j]['dep']:
                 x1 = x[j]['governorGloss'].lower()
                 x2 = x[j]['dependentGloss'].lower()
@@ -232,28 +210,20 @@ def typedependencies(sent_list):
                 elif x2 in neg_prefix:
                     neg_words.append(x1)
 
+            print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' 
+                + str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] +
+                 '-' + str(x[j]['dependent']))
+        print '==================================='
+        
+
         for key,value in sorted(compound_dic.items()):
             compound_list.append([key,value])
         # print compound_word(compound_list)  
         compound_dic.clear()
         
-        # print ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
-        # for j in range(len(x)):
-            # if 'mod' in x[j]['dep'] or 'nsubj' in x[j]['dep']:
-            # print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' 
-            #     + str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] +
-            #      '-' + str(x[j]['dependent']))
-        
 
         y = output['sentences'][0]['tokens']
         for k in range(len(y)):
-            # if 'JJ' in y[k]['pos']:
-            #   print y[k]['lemma'] + ' --> ' + y[k]['pos']
-            #   try:
-            #       print swn.senti_synsets(y[k]['lemma'],'a')[0].pos_score()
-            #   except:
-            #       pass
-            # print y[k]['lemma'] + ' --> ' + y[k]['pos']
             pos_dict[y[k]['word']] = y[k]['pos']
             if 'NNP' in y[k]['pos']:
                 proper_names.append(y[k]['word'])
@@ -268,8 +238,9 @@ def typedependencies(sent_list):
         for jj in range(len(w)):
             if w[jj] != '':
                 compound_word_list.append(w[jj])
-    # print '--------NAMES------' + str(proper_names)
-    # print '--------NEGATIVE----' + str(neg_words)
+
+    print '--------NAMES------' + str(proper_names)
+    print '--------NEGATIVE----' + str(neg_words)
     return depend_dict,pos_dict,proper_names
 
 def apply_score(li,n,score,final_score,meaning,m):
@@ -327,11 +298,14 @@ def check_for_root(dlist,poslist,final_score):
     # print poslist
     # print final_score
     # print '============='
-    lis1 = []
-    lis2 = []
-    li = {}
+
     for key,value in dlist.items():
+        lis1 = []
+        lis2 = []
+        li = {}
         lis = value
+        print value
+        print '------------root------------'
         for i in range(len(lis)):
             if i == 0:
                 if 'ROOT' in lis[0]:
@@ -365,7 +339,7 @@ def check_for_root(dlist,poslist,final_score):
                     if lis2[i][0].lower() not in stopwords:
                         wordpos = poslist[lis2[i][0]]
                         if ('JJ' in wordpos or 'NN' in wordpos or 'VB' in 
-                            wordpos):
+                            wordpos and wordpos != pos_root):
                             if (check_ifnotpresentin_scores(lis2[i][0],root,
                                     lis2[i][1],rootp,rootscore) == 1):
                                 final_score[lis2[i][0].lower()] = [rootscore,lis2[i][1],rootp,1,root] 
@@ -374,8 +348,8 @@ def check_for_root(dlist,poslist,final_score):
                 for i in range(len(lis2)):
                     if lis2[i][0].lower() not in stopwords:
                         wordpos = poslist[lis2[i][0]]
-                        if ('JJ' in wordpos or 'NN' in wordpos
-                            ):
+                        if ('JJ' in wordpos or 'NN' in wordpos and wordpos 
+                            != pos_root):
                             score = getting_sentiment(lis2[i][0].lower(),wordpos)
                             if score != -100:
                                 m2 = check_for_single_negative(lis2[i][0])
@@ -529,8 +503,8 @@ def preprocess(review):
 
 
 def replace_with_compoundword(score,dic):
-    # print score
-    # print dic
+    print score
+    print dic
 
     for key in score.keys():
         for k in dic.keys():
@@ -591,7 +565,7 @@ sample = "The food was very good but the ambience was pathetic"
 nrev6 = "Very unapologetic staff.. I went there on 3rd April got a big METAL piece in my chicken dish. The staff there were behaving as if I have put that metal piece in my dish.. Moreover staff included that dish in my bill. Till that instance it used to be my favourite place for Chinese food.. But now I don't think I can again go there and have that piece of metal, and facing that rude staff"
 nrev7 = "This place has turned into SHIT recently. No wonder nobody comes there even on weekends. I went there along with my family and friends on Sunday. I was surprised to see there were no customers. We went inside. It took them 10 minutes to bring the menu.We ordered something on which they asked for the Photo ID on which I produced it to them. Later on they started demanding the ID for everyone. Such a redeculious behaviour. The waiter kept arguing on which we requested him to call the manager. Manager came and repeated his lines like a parrot without logic. 3 out of 5 of us showed him our IDs. Its not necessary for everyone to carry an ID. They kept on arguing for each members ID and refused to serve. Such a insult to a customer. We left the place without having anything. PLEASE DON'T VISIT IT. - Yes, this is coming from a frequent visitor of this place. I have been here about more than 50 times and liked this place. BUT it has turned into horrible place with lack of customer service. Looks like they are no more interested in Restaurant Business. AVOID BERCOS CP Outlet."
 nrev8 = "I'm a big fan of the hauz khas social. So I definitely wanted to try this one. The food was definitely below average. We tried the Mezze platter and it was the worst Mediterranean food I've had. Management was sufficiently apologetic and asked for feedback on the comments card. The thing that put me off was that the chef came out and started arguing with us and insisting that his food was perfect. He has no compulsion to implement our suggestions, but actually coming out and fighting was too much. Definitely not going again."
-ww = "The food tastes good"
+ww = "The Butter Chicken was good"
 qq = "The sitting which is mostly outdoor is the prettiest you can come across in CP."
 ss = "Spring rolls were just fine and their chicken drumsticks are hands down the best you can ever taste. However the noodles left me a bit unsatisfied and were below their usual standardself."
 
@@ -600,15 +574,22 @@ t = word_tokenize(rev2)
 
 def main_func(review):
     final_score.clear()
+    compound_word_dic.clear()
+    compound_word_list = []
+    neg_words = []
     sent = preprocess(review)
     dp,dd,names = typedependencies(sent)
     check_for_noun_adj(dp,dd)
+    print dd
+    print '---------------Before root-------------'
+    pprint.pprint(final_score)
     check_for_root(dp,dd,final_score)
-
+    print '--------------after root----------------'
+    pprint.pprint(final_score)
     for i in range(len(compound_word_list)):
         compound_word_dic[compound_word_list[i]] = 1
-
-    # print compound_word_dic
+    print '----------compound-----------'
+    print compound_word_dic
     replace_with_compoundword(final_score,compound_word_dic)
     # print final_score
 
@@ -619,7 +600,7 @@ def main_func(review):
         r.append(key)
 
     get_trained_classifier(r,final_score)
-    print final_score
+    pprint.pprint(final_score)
     food,service,ambience,cost = final_scores(final_score)
     print food,service,ambience,cost
     return food,service,ambience,cost
@@ -627,7 +608,7 @@ def main_func(review):
 
     # print dish_score
 
-# main_func(nrev6)
+# main_func(rev4)
 
 
 
