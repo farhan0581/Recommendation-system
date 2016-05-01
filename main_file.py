@@ -39,10 +39,10 @@ os.environ['STANFORD_MODELS'] = '/home/farhan/Recommendation-system/stanford-ner
 # defining global parameters
 score_dic,stopwords = get_dict()
 neg_prefix = ['not','none','nor','n\'t']
-final_score = {}
-compound_word_dic = {}
-compound_word_list = []
-neg_words = []
+# final_score = {}
+# compound_word_dic = {}
+# compound_word_list = []
+# neg_words = []
 
 
 # checking for any dish present...
@@ -98,7 +98,6 @@ def split_sent(sentence):
 
 # getting the sentiment
 def getting_sentiment(word,pos):
-
     flag = 0
     if 'NN' in pos:
         tag = 'n'
@@ -118,18 +117,19 @@ def getting_sentiment(word,pos):
     else:
         x = stemmer.lemmatize(word)
 
-    if len(swn.senti_synsets(x,tag)) > 0:
-        score = swn.senti_synsets(x,tag)[0].pos_score() * 5
-    else:
-        try:
-            score = float(score_dic[x]) #* float(m1)
-        except KeyError:
-            score = -100
+    try:
+        score = float(score_dic[x]) #* float(m1)
+    except KeyError:
+        if len(swn.senti_synsets(x,tag)) > 0:
+            score = swn.senti_synsets(x,tag)[0].pos_score() * 5
+        else:
+            score = 100
 
     if flag == 1 and score != -100 and score < 4:
         score = score + 1
     elif flag == 1 and score != -100 and score > -4 and score < 0:
         score = score - 1
+    print word + '--->' + str(score)
     return score
 
 
@@ -154,7 +154,7 @@ def getting_namedentity(sent):
         print '========================================================'
 
 # getting typed dependencies using stanford parser
-def typedependencies(sent_list):
+def typedependencies(sent_list,neg_words,compound_word_list):
 
     pos_dict = {}
     depend_dict = {}
@@ -237,34 +237,37 @@ def typedependencies(sent_list):
             w = []
         for jj in range(len(w)):
             if w[jj] != '':
+                print w[jj]
                 compound_word_list.append(w[jj])
 
     print '--------NAMES------' + str(proper_names)
     print '--------NEGATIVE----' + str(neg_words)
     return depend_dict,pos_dict,proper_names
 
-def apply_score(li,n,score,final_score,meaning,m):
+def apply_score(li,n,score,final_score,meaning,m,t1,t2):
+    # print li,n,score,final_score,meaning,m,t1,t2
     try:
         x = final_score[n]
         if ((abs(int(x[1])-int(x[2])) < abs(int(li[2])-int(li[4])))
-                and (meaning != 1 and meaning != 2)):
-            final_score[n] = x
+            ):
+            if meaning > x[3]:
+                final_score[n] = [score,li[2],li[4],meaning,m]
+            else:
+                final_score[n] = x
 
         elif abs(int(x[1])-int(x[2])) == abs(int(li[2])-int(li[4])):
         
-            if float(x[0]) >= float(score):
+            if float(x[0]) >= float(score) and x[3] >= meaning:
                 final_score[n] = x
             else:   
                 final_score[n] = [score,li[2],li[4],meaning,m]
 
         elif abs(int(x[1])-int(x[2])) > abs(int(li[2])-int(li[4])):
             print '===here'
-            if meaning == 2:
+            if x[3] <= meaning:
                 final_score[n] = [score,li[2],li[4],meaning,m]
-            elif meaning == 1:
-                pass
-            elif meaning == 0:
-                pass
+            else:
+                final_score[n] = x
         else:
             final_score[n] = [score,li[2],li[4],meaning,m]
 
@@ -274,7 +277,7 @@ def apply_score(li,n,score,final_score,meaning,m):
     # return final_score
 
 
-def check_for_negative(a,b):
+def check_for_negative(a,b,neg_words):
 
     x = y = 1
     for i in range(len(neg_words)):
@@ -284,7 +287,7 @@ def check_for_negative(a,b):
             y = -1
     return x,y
 
-def check_for_single_negative(word):
+def check_for_single_negative(word,neg_words):
     x = 1
     for i in range(len(neg_words)):
         if word in neg_words[i]:
@@ -293,7 +296,7 @@ def check_for_single_negative(word):
 
 
 # function to parse and check the significance of root word
-def check_for_root(dlist,poslist,final_score):
+def check_for_root(dlist,poslist,final_score,neg_words):
     # print dlist
     # print poslist
     # print final_score
@@ -304,8 +307,6 @@ def check_for_root(dlist,poslist,final_score):
         lis2 = []
         li = {}
         lis = value
-        print value
-        print '------------root------------'
         for i in range(len(lis)):
             if i == 0:
                 if 'ROOT' in lis[0]:
@@ -326,22 +327,23 @@ def check_for_root(dlist,poslist,final_score):
                         lis2.append([lis[j][3],lis[j][4]])
                     elif lis[j][3] == lis1[i][0] and lis[j][1] != root:
                         lis2.append([lis[j][1],lis[j][2]])
-
+         
+        pos_root = poslist[root]
         # now check if root is significant
-        if root.lower() not in stopwords:
-            pos_root = poslist[root]
+        if (root.lower() not in stopwords and 'NN' in pos_root or 'JJ' in
+            pos_root ):
+           
             rootscore = getting_sentiment(root.lower(),pos_root)
-            m = check_for_single_negative(root)
+            m = check_for_single_negative(root,neg_words)
             rootscore = rootscore * m
-            if (rootscore != -100 and ('NN' in pos_root or 'JJ' in
-                pos_root )) :
+            if (rootscore != 100) :
                 for i in range(len(lis2)):
                     if lis2[i][0].lower() not in stopwords:
                         wordpos = poslist[lis2[i][0]]
-                        if ('JJ' in wordpos or 'NN' in wordpos or 'VB' in 
-                            wordpos and wordpos != pos_root):
+                        if ('JJ' in wordpos or 'NN' in wordpos and 
+                            wordpos != pos_root):
                             if (check_ifnotpresentin_scores(lis2[i][0],root,
-                                    lis2[i][1],rootp,rootscore) == 1):
+                                    lis2[i][1],rootp,rootscore,final_score) == 1):
                                 final_score[lis2[i][0].lower()] = [rootscore,lis2[i][1],rootp,1,root] 
                                 # print root,lis2[i][0],rootp,lis2[i][1]
             else:
@@ -351,11 +353,11 @@ def check_for_root(dlist,poslist,final_score):
                         if ('JJ' in wordpos or 'NN' in wordpos and wordpos 
                             != pos_root):
                             score = getting_sentiment(lis2[i][0].lower(),wordpos)
-                            if score != -100:
-                                m2 = check_for_single_negative(lis2[i][0])
+                            if score != 100:
+                                m2 = check_for_single_negative(lis2[i][0],neg_words)
                                 score = score * m2
                                 if (check_ifnotpresentin_scores(lis2[i][0],root,
-                                    lis2[i][1],rootp,score) == 1):
+                                    lis2[i][1],rootp,score,final_score) == 1):
                                     final_score[root.lower()] = [score,rootp,lis2[i][1],1,lis2[i][0]] 
                                     # print lis2[i][0],root
                                     # print ':::::::::::'
@@ -368,7 +370,7 @@ def check_for_root(dlist,poslist,final_score):
     # print lis2
 
 
-def check_ifnotpresentin_scores(word1,word2,ps1,ps2,score):
+def check_ifnotpresentin_scores(word1,word2,ps1,ps2,score,final_score):
     
     flag = 0
     try:
@@ -391,7 +393,7 @@ def check_ifnotpresentin_scores(word1,word2,ps1,ps2,score):
     return flag
 
 
-def check_for_noun_adj(depend_dict, pos_dict):
+def check_for_noun_adj(depend_dict, pos_dict,final_score,neg_words):
 
     # getting the score and stopwords dictionary
     sd,stopwords = get_dict()
@@ -403,13 +405,11 @@ def check_for_noun_adj(depend_dict, pos_dict):
             score1 = 100
             score2 = 100
             li = value[j]
-            if li[0] == "nsubj" or "mod" in li[0]:
-                meaning = 0
+            if "nsubj" in li[0] or "mod" in li[0]:
+                meaning = 0.2
                 n1 = li[1]
                 n2 = li[3]
-                m1, m2 = check_for_negative(n1,n2)
-                # n1 = stemmer3.lemmatize(li[1])
-                # n2 = stemmer3.lemmatize(li[3])
+                m1, m2 = check_for_negative(n1,n2,neg_words)
                 try:
                     t1 = pos_dict[n1]
                 except KeyError:
@@ -422,72 +422,97 @@ def check_for_noun_adj(depend_dict, pos_dict):
                     flag = 1
                 if (flag != 1 and n1.lower() not in stopwords
                      and n2.lower() not in stopwords):
-                    # check if tags have a score...
-                    try:
-                        score1 = float(sd[n1.lower()]) * float(m1)
-                    except KeyError:
-                        pass
-                    try:
-                        score2 = float(sd[n2.lower()]) * float(m2)
-                    except KeyError:
-                        pass
+            
+                    score1 = getting_sentiment(n1.lower(),t1)
+                    if score1 != 100:
+                        score1 = float(score1) * float(m1)
+                    score2 = getting_sentiment(n2.lower(),t2)
+                    if score2 != 100:
+                        score2 = float(score2) * float(m2)
+
                     if score1 != 100 or score2 != 100:
                         if 'NN' in t1 or 'NN' in t2:
                             if 'JJ' in t1 or 'JJ' in t2:
-                                meaning = 2
-                                # print n1 + ' and ' + n2 + ' appear to be  meaningful...'
-                            else:
-                                # print n1 + ' and ' + n2 + ' appear to be less meaningful...'
                                 meaning = 1
-                        else:
-                            # print n1 + ' and ' + n2 + ' appear to be very less meaningful'
-                            meaning = 0
-                        if score1 != 100:
-                            apply_score(li,n2,score1,final_score,meaning,n1)
-                            # print n1,score1
-                        if score2 != 100:
-                            # print n2,score2
-                            apply_score(li,n1,score2,final_score,meaning,n2)
+                                # print n1 + ' and ' + n2 + ' appear to be  meaningful...'
+                            elif ('VB' in t1 or 'VB' in t2
+                                or ('NN' in t1 and 'NN' in t2)):
+                                # print n1 + ' and ' + n2 + ' appear to be less meaningful...'
+                                meaning = 0.8
+                        else:                         
+                            meaning = 0.2
+                        if score1 != 100 and score2 == 100:
+                            apply_score(li,n2,score1,final_score,meaning,n1,t2,t1)
+                            print n1,n2
+                        if score2 != 100 and score1 == 100:
+                            print n2,n1
+                            apply_score(li,n1,score2,final_score,meaning,n2,t1,t2)
+
+                        elif score2 != 100 and score1 != 100:
+                            if 'NN' in t1 and 'JJ' in t2:
+                                # print n1,n2
+                                apply_score(li,n1,score2,final_score,meaning,n2,t1,t2)
+                            elif 'JJ' in t1 and 'NN' in t2:
+                                apply_score(li,n2,score1,final_score,meaning,n1,t2,t1)
+                                # print n1,n2
+                            elif 'NN' in t1:
+                                apply_score(li,n1,score2,final_score,meaning,n2,t1,t2)
+                                # print n1,n2
+                            elif 'NN' in t2:
+                                apply_score(li,n2,score1,final_score,meaning,n1,t2,t1)
+                                # print n1,n2
+
                     else:
                         # print 'The scores are not present for ' + n1 + ' and ' + n2
                         pass
 
-            # checking for direct object...
-            if 'dobj' in li[0]:
+            # checking for direct object or dependency...
+            if 'dobj' in li[0] or 'dep' in li[0]:
                 n1 = li[1]
                 n2 = li[3]
-                m1, m2 = check_for_negative(n1,n2)
+                m1, m2 = check_for_negative(n1,n2,neg_words)
                 t1 = pos_dict[n1]
                 t2 = pos_dict[n2]
                 score1 = 100
                 score2 = 100
-                try:
-                    score1 = sd[n1.lower()] * m1
-                except KeyError:
-                    pass
-                try:
-                    score2 = sd[n2.lower()] * m2
-                except KeyError:
-                    pass
+                score1 = getting_sentiment(n1.lower(),t1)
+                if score1 != 100:
+                    score1 = float(score1) * float(m1)
+                score2 = getting_sentiment(n2.lower(),t2)
+                if score2 != 100:
+                    score2 = float(score2) * float(m2)
+
                 if score1 != 100 or score2 != 100:
                     if (n1.lower() not in stopwords and
                          n2.lower() not in stopwords):
                         if 'NN' in t1 or 'NN' in t2:
                             if 'JJ' in t1 or 'JJ' in t2:
-                                pass
+                                meaning = 1
                                 # print n1,t1 + ' and ' + n2,t2 + ' adjective-noun as direct object...'
                             else:
-                                pass
+                                if ('VB' in t1 or 'VB' in t2 or 
+                                    ('NN' in t1 and 'NN' in t2)):
+                                    meaning = 0.8
                                 # print n1,t1 + ' and ' + n2,t2 + ' as direct object...'
                         else:
-                            pass
+                            meaning = 0.2
                             # print 'no noun occurance'
 
 
-                        if score2 != 100:
-                            apply_score(li,n1,score2,final_score,1,n2)
-                        if score1 != 100:
-                            apply_score(li,n2,score1,final_score,1,n1)
+                        if score2 != 100 and score1 == 100:
+                            apply_score(li,n1,score2,final_score,meaning,n2,t1,t2)
+                        elif score1 != 100 and score2 == 100:
+                            apply_score(li,n2,score1,final_score,meaning,n1,t2,t1)
+                        elif score1 != 100 and score2 != 100:
+                            if 'NN' in t1 and 'JJ' in t2:
+                                apply_score(li,n1,score2,final_score,meaning,n2,t1,t2)
+                            elif 'JJ' in t1 and 'NN' in t2:
+                                apply_score(li,n2,score1,final_score,meaning,n1,t2,t1)
+                            elif score1 > score2:
+                                apply_score(li,n2,score1,final_score,meaning,n1,t2,t1)
+                            elif score2 >= score1:
+                                apply_score(li,n1,score2,final_score,meaning,n2,t1,t2)
+
 
                     else:
                         print '-----------stopwords-----------'
@@ -503,20 +528,26 @@ def preprocess(review):
 
 
 def replace_with_compoundword(score,dic):
-    print score
-    print dic
+    # print score
+    # print dic
 
     for key in score.keys():
         for k in dic.keys():
-            if key in k:
+            if key.lower() in k.lower():
                 try:
                     x = score[key]
                     del score[key]
                     score[k] = x
                 except KeyError:
                     pass
-                    # print '////////////////////////////'
-    
+    # print score
+
+
+def cross_validate():
+    """cross validating the scores dictionary"""
+    pass
+
+                    # print '/////////////////////////  
 
 
     # elif 'VB' in tagged[i][1] and len(swn.senti_synsets(tagged[i][0],'v'))>0:
@@ -565,27 +596,34 @@ sample = "The food was very good but the ambience was pathetic"
 nrev6 = "Very unapologetic staff.. I went there on 3rd April got a big METAL piece in my chicken dish. The staff there were behaving as if I have put that metal piece in my dish.. Moreover staff included that dish in my bill. Till that instance it used to be my favourite place for Chinese food.. But now I don't think I can again go there and have that piece of metal, and facing that rude staff"
 nrev7 = "This place has turned into SHIT recently. No wonder nobody comes there even on weekends. I went there along with my family and friends on Sunday. I was surprised to see there were no customers. We went inside. It took them 10 minutes to bring the menu.We ordered something on which they asked for the Photo ID on which I produced it to them. Later on they started demanding the ID for everyone. Such a redeculious behaviour. The waiter kept arguing on which we requested him to call the manager. Manager came and repeated his lines like a parrot without logic. 3 out of 5 of us showed him our IDs. Its not necessary for everyone to carry an ID. They kept on arguing for each members ID and refused to serve. Such a insult to a customer. We left the place without having anything. PLEASE DON'T VISIT IT. - Yes, this is coming from a frequent visitor of this place. I have been here about more than 50 times and liked this place. BUT it has turned into horrible place with lack of customer service. Looks like they are no more interested in Restaurant Business. AVOID BERCOS CP Outlet."
 nrev8 = "I'm a big fan of the hauz khas social. So I definitely wanted to try this one. The food was definitely below average. We tried the Mezze platter and it was the worst Mediterranean food I've had. Management was sufficiently apologetic and asked for feedback on the comments card. The thing that put me off was that the chef came out and started arguing with us and insisting that his food was perfect. He has no compulsion to implement our suggestions, but actually coming out and fighting was too much. Definitely not going again."
-ww = "The Butter Chicken was good"
+ww = "The Butter Chicken was not good at Al Kareem"
 qq = "The sitting which is mostly outdoor is the prettiest you can come across in CP."
 ss = "Spring rolls were just fine and their chicken drumsticks are hands down the best you can ever taste. However the noodles left me a bit unsatisfied and were below their usual standardself."
+cc = "Going to Dunkin' Donuts is always a happy experience. Pleasant music and to add to charm is the dining area. A very filling variety of burgers, Naughty Lucy veg. is a must try. Wicked wraps are something unavoidable if you go there. Coffee tastes very nice, even the simplest Classic has its own taste and so are the milkshakes especially Fruit berry. Love it. Simply Awesome!"
+vv = " This sagar ratna is very old restaurant serving delicious dahi vada & scrumptious south Indian food. This place is loosing its charm due to poor service & dull ambiance. Average place to visit."
+aa = "The sofas are torn... Not well maintained. We took one couch that looked OK.. But then were asked to vacate it since it was reserved - even though there was no sign placed on the table that indicated reservation. The waiter's attitude was below the standards of a supposedly good restaurant chain. The food is overpriced for the quality and quantity... There is a minimum standard of presentation that is expected but was not there. Overall an avoidable experience, specially the CP outlet... I have heard the other outlets are good and hence was hugely disappointed coming to this one."
+
+
 
 tokens = word_tokenize(rev6)
 t = word_tokenize(rev2)
 
 def main_func(review):
-    final_score.clear()
-    compound_word_dic.clear()
+    final_score = {}
+    compound_word_dic = {}
     compound_word_list = []
     neg_words = []
     sent = preprocess(review)
-    dp,dd,names = typedependencies(sent)
-    check_for_noun_adj(dp,dd)
+    dp,dd,names = typedependencies(sent,neg_words,compound_word_list)
+    check_for_noun_adj(dp,dd,final_score,neg_words)
     print dd
     print '---------------Before root-------------'
     pprint.pprint(final_score)
-    check_for_root(dp,dd,final_score)
+    # if len(sent) < 3:
+        # check_for_root(dp,dd,final_score,neg_words)
     print '--------------after root----------------'
     pprint.pprint(final_score)
+    # print compound_word_list
     for i in range(len(compound_word_list)):
         compound_word_dic[compound_word_list[i]] = 1
     print '----------compound-----------'
@@ -601,14 +639,20 @@ def main_func(review):
 
     get_trained_classifier(r,final_score)
     pprint.pprint(final_score)
-    food,service,ambience,cost = final_scores(final_score)
+    food,service,ambience,cost,dish_list = final_scores(final_score)
     print food,service,ambience,cost
-    return food,service,ambience,cost
+    # print dish_list
+    dish_list_refined = []
+    for x in range(len(dish_list)):
+        if check_in_dic(dish_list[x]) != None:
+            dish_list_refined.append(dish_list[x])
+    print dish_list_refined
+    return food,service,ambience,cost,dish_list_refined
     # get_dish_names(r,)
 
     # print dish_score
 
-# main_func(rev4)
+main_func(ww)
 
 
 

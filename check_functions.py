@@ -29,19 +29,23 @@ import dpath.util
 from classifier import get_classifier
 import xml.etree.ElementTree as ET
 import requests
+from classifier import check_in_dic
 
-def split_sent(sentence):
-    sentence = re.split('[.?!]',sentence)
-    sentence = [x.lower() for x in sentence if x!='']
-    return sentence 
+# def split_sent(sentence):
+#     sentence = re.split('[.?!]',sentence)
+#     sentence = [x.lower() for x in sentence if x!='']
+#     return sentence 
 
 
-x = 'prettiest'
+print check_in_dic('*awesome*')
+
+
+x = 'idea'
 stemmer3 = WordNetLemmatizer()
-x = stemmer3.lemmatize(x,pos='a')
+x = stemmer3.lemmatize(x,pos='n')
 print x
-d = {}
-print swn.senti_synsets('prettiest','a')[0]
+# # d = {}
+print swn.senti_synsets(x,pos='n')[0]
 # tree = ET.parse('/home/farhan/Downloads/ABSA15_RestaurantsTrain/ABSA-15_Restaurants_Train_Final.xml')
 # root = tree.getroot()
 # for child in root.findall('Review'):
@@ -158,3 +162,15 @@ dic = {'1':'dasd','2':'asdf','3':'sdv'}
 # 	print 'fsdf'
 # {u'pay': [2.0, '5', '15'], u'%': [1.0, '11', '14'], u'Food': [1.0, '3', '1'], 
 # u'honour': ['1', '9', '11'], u'citibank offer': ['3', '9', '11'], u'money': [1.0, '7', '6'], u'staff': [2.0, '15', '18']}
+
+def a(x,y):
+	x['me'] = 'farja'
+	y.append('sdfvsd')
+def b():
+	lis = []
+	dic = {}
+	a(dic,lis)
+	print lis
+	print dic
+b()
+

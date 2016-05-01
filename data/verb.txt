@@ -224,7 +224,6 @@ envision	1
 establish	1
 evolve	1
 excite	1
-experience	1
 familiarize	1
 flatter	1
 forgive	1
