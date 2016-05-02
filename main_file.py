@@ -196,19 +196,19 @@ def typedependencies(sent_list,neg_words,compound_word_list):
                 x1 = x[j]['governorGloss'].lower()
                 x2 = x[j]['dependentGloss'].lower()
                 if x1 not in stopwords:
-                    neg_words.append(x1)
+                    neg_words.append([x1,x[j]['governor']])
                 else:
-                    neg_words.append(x2)
+                    neg_words.append([x2,x[j]['dependent']])
 
             if 'conj' in x[j]['dep']:
                 x1 = x[j]['governorGloss'].lower()
                 x2 = x[j]['dependentGloss'].lower()
                 if x1 in neg_prefix:
-                    neg_words.append(x2)
+                    neg_words.append([x2,x[j]['dependent']])
                 # elif (x2 == 'not' or x2 == 'nor' or x2 == 'non'):
                 #   neg_words.append(x1)
                 elif x2 in neg_prefix:
-                    neg_words.append(x1)
+                    neg_words.append([x1,x[j]['governor']])
 
             print (x[j]['dep'] + '-->' + x[j]['governorGloss'] + '-' 
                 + str(x[j]['governor']) + ' ' + x[j]['dependentGloss'] +
@@ -277,13 +277,13 @@ def apply_score(li,n,score,final_score,meaning,m,t1,t2):
     # return final_score
 
 
-def check_for_negative(a,b,neg_words):
+def check_for_negative(a,b,p1,p2,neg_words):
 
     x = y = 1
     for i in range(len(neg_words)):
-        if a in neg_words[i]:
+        if a in neg_words[i][0] and int(p1) == int(neg_words[i][1]):
             x = -1
-        elif b in neg_words[i]:
+        elif b in neg_words[i][0] and int(p2) == int(neg_words[i][1]):
             y = -1
     return x,y
 
@@ -409,7 +409,7 @@ def check_for_noun_adj(depend_dict, pos_dict,final_score,neg_words):
                 meaning = 0.2
                 n1 = li[1]
                 n2 = li[3]
-                m1, m2 = check_for_negative(n1,n2,neg_words)
+                m1, m2 = check_for_negative(n1,n2,li[2],li[4],neg_words)
                 try:
                     t1 = pos_dict[n1]
                 except KeyError:
@@ -470,7 +470,7 @@ def check_for_noun_adj(depend_dict, pos_dict,final_score,neg_words):
             if 'dobj' in li[0] or 'dep' in li[0]:
                 n1 = li[1]
                 n2 = li[3]
-                m1, m2 = check_for_negative(n1,n2,neg_words)
+                m1, m2 = check_for_negative(n1,n2,li[2],li[4],neg_words)
                 t1 = pos_dict[n1]
                 t2 = pos_dict[n2]
                 score1 = 100
@@ -596,7 +596,7 @@ sample = "The food was very good but the ambience was pathetic"
 nrev6 = "Very unapologetic staff.. I went there on 3rd April got a big METAL piece in my chicken dish. The staff there were behaving as if I have put that metal piece in my dish.. Moreover staff included that dish in my bill. Till that instance it used to be my favourite place for Chinese food.. But now I don't think I can again go there and have that piece of metal, and facing that rude staff"
 nrev7 = "This place has turned into SHIT recently. No wonder nobody comes there even on weekends. I went there along with my family and friends on Sunday. I was surprised to see there were no customers. We went inside. It took them 10 minutes to bring the menu.We ordered something on which they asked for the Photo ID on which I produced it to them. Later on they started demanding the ID for everyone. Such a redeculious behaviour. The waiter kept arguing on which we requested him to call the manager. Manager came and repeated his lines like a parrot without logic. 3 out of 5 of us showed him our IDs. Its not necessary for everyone to carry an ID. They kept on arguing for each members ID and refused to serve. Such a insult to a customer. We left the place without having anything. PLEASE DON'T VISIT IT. - Yes, this is coming from a frequent visitor of this place. I have been here about more than 50 times and liked this place. BUT it has turned into horrible place with lack of customer service. Looks like they are no more interested in Restaurant Business. AVOID BERCOS CP Outlet."
 nrev8 = "I'm a big fan of the hauz khas social. So I definitely wanted to try this one. The food was definitely below average. We tried the Mezze platter and it was the worst Mediterranean food I've had. Management was sufficiently apologetic and asked for feedback on the comments card. The thing that put me off was that the chef came out and started arguing with us and insisting that his food was perfect. He has no compulsion to implement our suggestions, but actually coming out and fighting was too much. Definitely not going again."
-ww = "The Butter Chicken was not good at Al Kareem"
+ww = "The Butter Chicken was good but noodles were not good."
 qq = "The sitting which is mostly outdoor is the prettiest you can come across in CP."
 ss = "Spring rolls were just fine and their chicken drumsticks are hands down the best you can ever taste. However the noodles left me a bit unsatisfied and were below their usual standardself."
 cc = "Going to Dunkin' Donuts is always a happy experience. Pleasant music and to add to charm is the dining area. A very filling variety of burgers, Naughty Lucy veg. is a must try. Wicked wraps are something unavoidable if you go there. Coffee tastes very nice, even the simplest Classic has its own taste and so are the milkshakes especially Fruit berry. Love it. Simply Awesome!"
@@ -642,12 +642,12 @@ def main_func(review):
     food,service,ambience,cost,dish_list = final_scores(final_score)
     print food,service,ambience,cost
     # print dish_list
-    dish_list_refined = []
-    for x in range(len(dish_list)):
-        if check_in_dic(dish_list[x]) != None:
-            dish_list_refined.append(dish_list[x])
-    print dish_list_refined
-    return food,service,ambience,cost,dish_list_refined
+    # dish_list_refined = []
+    # for x in range(len(dish_list)):
+    #     if check_in_dic(dish_list[x] + '*') != None and dish_list[x].lower() != 'food' :
+    #         dish_list_refined.append(dish_list[x])
+    # print dish_list_refined
+    return food,service,ambience,cost,dish_list
     # get_dish_names(r,)
 
     # print dish_score

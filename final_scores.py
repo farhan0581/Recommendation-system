@@ -14,7 +14,7 @@ def final_scores(dic):
 		if lis[5] == 'food' and lis[0] != 0.0:
 			food = food + float(lis[0]) * float(lis[3])
 			fc = increment(fc,lis[3])
-			if float(lis[3]) > 0.8:
+			if float(lis[3]) > 0.8 and lis[0] > 1:
 				dishes.append(key)
 
 		elif lis[5] == 'ambience'  and lis[0] != 0.0:

@@ -10,7 +10,13 @@ from numpy import array
 from sklearn.externals import joblib
 import dpath.util
 
-
+def get_dish_lookup():
+	result = {}
+	handle = open('data/zomato_dishes.csv','r')
+	reader = csv.DictReader(handle)
+	for row in reader:
+		result[row['dish']] = 1
+	return result
 
 def get_lookup_dict():
 

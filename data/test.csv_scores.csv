@@ -1,51 +1,51 @@
 sno.,food,service,ambience,cost
-2,Vaibhav Agarwal,0.3048076923076924,-10000,-10000,-10000, 4.5,"[u'food', u'uttapam']"
+2,Vaibhav Agarwal,-0.1852272727272727,-10000,-10000,-10000, 4.5,"[u'way', u'uttapam']"
 3,Shikha,4.111111111111112,-2.0,-0.6666666666666666,-10000, 2.5,[u'dahi vada']
 4,Ashish Sarma,-2.230769230769231,3.125,1.8571428571428574,-10000, 1.0,[u'standard']
-5,Toshi Vasistha,0.36000000000000004,-1.0,-0.7777777777777777,-10000, 1.0,"[u'food', u'Dosa', u'coconut chutney']"
-6,Jasmeet Singh,1.3333333333333333,2.4615384615384617,-10000,-10000, 3.5,"[u'food', u'taste']"
+5,Toshi Vasistha,0.36000000000000004,-1.0,-0.7777777777777777,-10000, 1.0,"[u'coconut chutney', u'mysore masala  dosa']"
+6,Jasmeet Singh,1.3333333333333333,2.4615384615384617,-10000,-10000, 3.5,"[u'taste', u'ones']"
 7,Abilash Baskaran,0.8782051282051282,1.6666666666666667,2.0,-10000, 4.0,"[u'Rotis', u'Sambar', u'zeal', u'dinner']"
-8,Neha Singh,1.416666666666667,2.0,0.6521739130434783,0.8666666666666667, 3.5,[u'food']
-9,Kritika Sharma,-1.4444444444444444,1.0,0.625,-10000, 4.0,[]
-10,Willie Ahuja,0.15789473684210528,-10000,-10000,-10000, 3.0,"[u'taste', u'food']"
+8,Neha Singh,1.416666666666667,2.0,0.6521739130434783,0.8666666666666667, 3.5,"[u'access', u'types']"
+9,Kritika Sharma,-1.4444444444444444,1.0,0.625,-10000, 4.0,[u'rest']
+10,Willie Ahuja,0.15789473684210528,-10000,-10000,-10000, 3.0,"[u'taste', u'options']"
 11,Sanjeev Pandey,-3.0,-10000,-10000,-10000, 1.0,[u'wash']
-13,Deepak Hooda,2.2222222222222223,-10000,-10000,-10000, 5.0,[u'food']
-14,Akash Shah,2.0,1.0,-2.0,-10000, 2.0,"[u'lime soda', u'days', u'roti']"
+13,Deepak Hooda,2.2222222222222223,-10000,-10000,-10000, 5.0,[]
+14,Akash Shah,2.0,1.0,-2.0,-10000, 2.0,"[u'lime soda', u'days', u'n food', u'roti']"
 15,Rakesh Shah,2.0,3.0,-10000,-10000, 4.0,[]
 16,Sachin Kumar,1.4444444444444444,-10000,1.4444444444444444,-10000, 1.5,[u'podi idlis']
 17,Judith J Scenario,2.0,-10000,-10000,-10000, 3.5,[u'quality']
 18,Mukesh Chugh,0.5000000000000001,1.0,-10000,-10000, 1.0,[]
-19,PRAMOD,2.352272727272727,1.0000000000000002,0.74,-10000, 3.5,"[u'taste', u'raita', u'name']"
-20,Daksh Soni,2.7916666666666665,-10000,2.0,-10000, 4.5,"[u'Coffee', u'Dosa', u'Everything', u'treat', u'Idli']"
-21,Ankush Virmani,2.3333333333333335,-10000,-3.0,-10000, 4.0,"[u'good', u'taste']"
+19,PRAMOD,2.352272727272727,1.0000000000000002,0.74,-10000, 3.5,"[u'taste', u'raita', u'iam', u'above', u'Naans', u'name']"
+20,Daksh Soni,2.7916666666666665,-10000,2.0,-10000, 4.5,"[u'Coffee', u'rawa idli', u'Everything', u'treat']"
+21,Ankush Virmani,1.0,-10000,-3.0,-10000, 4.0,[u'taste']
 22,Sumit Juneja Ghai,-10000,3.0,2.0,-10000, 4.0,[]
-23,Vaishali Gupta,3.2083333333333335,-0.6666666666666667,-10000,-10000, 4.5,"[u'dahi vada', u'food', u'part']"
-24,Sharath Nair,1.3333333333333333,-10000,-10000,-10000, 3.5,"[u'Food', u'food']"
-25,Prateek Bhandari,-3.6666666666666665,-10000,-10000,-10000, 1.0,[u'food']
+23,Vaishali Gupta,3.2083333333333335,-0.6666666666666667,-10000,-10000, 4.5,"[u'dahi vada', u'chillies', u'part']"
+24,Sharath Nair,1.3333333333333333,-10000,-10000,-10000, 3.5,[]
+25,Prateek Bhandari,-3.6666666666666665,-10000,-10000,-10000, 1.0,[]
 26,Sania,-0.17857142857142858,-3.0,-10000,-10000, 3.0,"[u'Nothing', u'Thali']"
-27,Sidharth Sharma,5.0,0.2708333333333333,0.625,-10000, 4.0,[u'food']
+27,Sidharth Sharma,5.0,0.2708333333333333,0.625,-10000, 4.0,[]
 28,Shreya Mago,-1.5,3.0,-10000,-10000, 4.0,[]
 29,Saloj Shaji,3.0,-10000,3.0,1.0, 4.0,[u'breakfast']
-30,FJ,4.0,4.0,0.6,-10000, 4.0,[u'Food']
-31,Mukta Dhawan,2.117647058823529,3.0,-10000,-10000, 4.0,[]
+30,FJ,4.0,4.0,0.6,-10000, 4.0,[]
+31,Mukta Dhawan,2.117647058823529,3.0,-10000,-10000, 4.0,[u'option']
 32,Gaurav Mehta,0.9615384615384615,5.0,3.0,-10000, 4.0,"[u'filter coffee', u'coconut chutney', u'vegetarians']"
-33,Symi Niman,2.0526315789473686,-10000,-10000,3.0, 3.5,[]
+33,Symi Niman,2.0526315789473686,-10000,-10000,3.0, 3.5,[u'Idlis']
 34,Diksha Rai,4.5,-10000,-10000,2.0, 1.5,[]
 35,Tarun Khurana,1.0,-10000,-10000,-10000, 1.0,[]
 36,Food Love,1.5384615384615383,0.625,5.0,-10000, 2.5,[u'half']
-37,Shivanshi Mittal,3.0,-10000,1.6,-10000, 4.0,[u'Sambhar']
-38,RishWish,1.6451612903225805,-10000,1.0,-10000, 3.5,"[u'Rasam', u'nothing', u'Dosa']"
+37,Shivanshi Mittal,3.0,-10000,1.6,-10000, 4.0,[u'Dishes']
+38,RishWish,1.6451612903225805,-10000,1.0,-10000, 3.5,"[u'Rasam', u'palette', u'rava masala  dosa', u'nothing']"
 39,Prateek Bhattu,1.8333333333333335,1.4444444444444444,3.0,-10000, 3.0,[u'taste']
 40,Divya Dutta,1.0,-10000,-10000,-10000, 3.0,[u'everything']
 41,Ayushie Mathur,0.8571428571428572,-1.0,2.0,-10000,Rated 5.0,[u'variety']
-42,Dr Ashwani Mehta,1.6486486486486487,0.45454545454545453,1.6956521739130437,-10000,Rated 2.0,"[u'veg burger', u'food', u'Falafel']"
-44,Saurabh Asthana,2.8515625,5.0,-10000,-10000,Rated 4.0,"[u'food', u'nothing']"
+42,Dr Ashwani Mehta,1.6486486486486487,1.6666666666666667,1.6956521739130437,-10000,Rated 2.0,[u'veg burger']
+44,Saurabh Asthana,2.8515625,5.0,-10000,-10000,Rated 4.0,[u'nothing']
 45,Saransh Singhal,1.7280927835051543,1.923076923076923,0.7222222222222222,2.0,Rated 4.0,"[u'momos', u'chicken', u'sir', u'bite', u'custom', u'chilli', u'veg burger', u'cheese sauce', u'potatoes', u'something']"
-46,Rahul Sharma,1.0,0.2777777777777778,-2.0,-10000,Rated 2.0,[u'Food']
-47,Alok Priya Saurabh,3.230769230769231,3.0,1.0,-10000,Rated 5.0,[]
+46,Rahul Sharma,1.0,0.2777777777777778,-2.0,-10000,Rated 2.0,[]
+47,Alok Priya Saurabh,4.111111111111112,3.0,1.2,-10000,Rated 5.0,[]
 48,Aayush Somani,1.45,-10000,0.625,-10000,Rated 4.5,[]
-50,Chris Perkins,2.5,2.3958333333333335,5.0,-10000,Rated 5.0,"[u'food', u'sign']"
-51,Priyanka Garg,1.0,3.0,0.625,-10000,Rated 3.0,[u'food']
+50,Chris Perkins,2.5,2.3958333333333335,5.0,-10000,Rated 5.0,[u'sign']
+51,Priyanka Garg,1.0,3.0,0.625,-10000,Rated 3.0,[]
 52,Kashish Bajaj,1.0,-10000,2.5,-10000,Rated 3.5,[]
 53,Mohini Tripathi,3.466666666666667,-10000,1.0,-10000,Rated 4.0,[u'fusion']
 54,Shrina Vaidik,-10000,-10000,4.0,-10000,Rated 2.0,[]
@@ -54,35 +54,35 @@ sno.,food,service,ambience,cost
 57,Rajesh Sarin,1.7307692307692306,-10000,-10000,-10000,Rated 3.0,[]
 58,Amarjeet Verma,0.625,3.1578947368421053,5.0,-10000,Rated 5.0,[]
 59,Shantanu Sharma,5.0,-10000,3.78125,-10000,Rated 4.0,[]
-60,Puneet Wadhwa,3.3846153846153846,2.0,-1.0,-10000,Rated 4.0,[]
+60,Puneet Wadhwa,3.3846153846153846,2.0,-1.0,-10000,Rated 4.0,[u'drinks']
 61,Ankita Singh,1.3333333333333335,-10000,5.0,-10000,Rated 4.0,[]
-63,Nishit Kp,1.2361111111111112,0.625,-0.2222222222222224,-10000,Rated 2.5,[]
-64,Vasundhra Gupta,0.03571428571428567,0.41666666666666663,1.0,-10000,Rated 2.0,"[u'taste', u'nothing']"
+63,Nishit Kp,1.2361111111111112,0.625,-0.2222222222222224,-10000,Rated 2.5,[u'drinks']
+64,Vasundhra Gupta,0.03571428571428567,0.41666666666666663,1.0,-10000,Rated 2.0,"[u'taste', u'nothing', u'shock']"
 65,Ankita Podder,0.5749999999999998,3.0,-10000,-10000,Rated 4.5,[u'combo']
 66,Latika Ogra,-1.475,-10000,1.5,-10000,Rated 3.0,[]
-67,Komal Bhatia,1.0,-10000,1.0,-10000,Rated 4.0,[u'part']
-68,DEBALINA MALLICK,4.0,-10000,3.4843750000000004,-10000,Rated 4.0,"[u'Food', u'mix']"
-69,Sarthak Goel,3.666666666666667,-10000,5.0,-10000,Rated 5.0,"[u'food', u'person']"
-70,Nitansh Sharma,3.583333333333334,5.0,2.7142857142857144,-10000,Rated 4.5,[u'food']
+67,Komal Bhatia,1.0,-10000,1.0,-10000,Rated 4.0,"[u'Kool', u'part']"
+68,DEBALINA MALLICK,4.0,-10000,3.4843750000000004,-10000,Rated 4.0,[u'mix']
+69,Sarthak Goel,3.666666666666667,-10000,5.0,-10000,Rated 5.0,[u'person']
+70,Nitansh Sharma,3.7500000000000004,5.0,2.7142857142857144,-10000,Rated 4.5,[]
 71,Prachi Khandelwal,3.0000000000000004,4.0,1.875,-10000,Rated 4.5,[]
-72,Ambika Singhal Bansal,5.0,4.0,3.3333333333333335,-10000,Rated 4.5,[u'food']
-73,Karishma Singh,-0.2,3.5,2.5,-10000,Rated 4.5,"[u'Pizza', u'smacking']"
-74,Vatsala Pandey,3.204545454545454,-10000,3.3793103448275867,-10000,Rated 4.5,[u'variety']
-75,Nainika Oberai,2.75,5.0,3.0,-10000,Rated 4.5,"[u'food', u'juices', u'paneer', u'hummus pita']"
-76,Chahat,3.0,-2.0,4.0,-10000,Rated 4.0,[u'food']
+72,Ambika Singhal Bansal,5.0,4.0,3.3333333333333335,-10000,Rated 4.5,[]
+73,Karishma Singh,-0.2,3.5,2.5,-10000,Rated 4.5,"[u'pieces', u'spinach salad', u'smacking']"
+74,Vatsala Pandey,3.204545454545454,-10000,3.3793103448275867,-10000,Rated 4.5,"[u'cocktails', u'variety']"
+75,Nainika Oberai,2.75,5.0,3.0,-10000,Rated 4.5,"[u'juices', u'paneer', u'hummus pita']"
+76,Chahat,3.0,-2.0,4.0,-10000,Rated 4.0,[]
 77,Singhprerna435,-10000,-10000,2.473684210526316,-10000,Rated 4.0,[]
 78,Gayatri Mohan,0.5172413793103449,-10000,0.25,-10000,Rated 4.0,"[u'everything', u'Nothing', u'rock']"
-79,Bedo Dutta,1.0240384615384615,3.0,1.888888888888889,-10000,Rated 4.5,"[u'menu', u'Brownie']"
+79,Bedo Dutta,1.0240384615384615,3.0,1.888888888888889,-10000,Rated 4.5,"[u'way', u'menu', u'drinks']"
 80,Akshat Kalra,1.7692307692307694,3.5,1.142857142857143,1.0,Rated 4.0,[u'veggies']
 81,Shivam Gupta,3.266666666666666,-10000,0.5923913043478262,3.0000000000000004,Rated 4.5,[u'yummy']
 82,Tushar Dunga,1.880952380952381,1.90625,0.6,-10000,Rated 1.0,[u'days']
-83,Suhael Buttan,0.10576923076923077,-10000,2.40625,0.8333333333333333,Rated 4.0,"[u'chicken tikka', u'mix', u'non', u'tad']"
+83,Suhael Buttan,0.10576923076923077,-10000,2.40625,0.8333333333333333,Rated 4.0,"[u'cocktails', u'chicken tikka', u'mix', u'non', u'tad', u'balance']"
 84,Yuvraj Singh,3.0,-10000,2.5,-10000,Rated 4.0,[]
-85,Piyush Nahata,2.329545454545454,3.5,-10000,-10000,Rated 3.5,[]
+85,Piyush Nahata,2.329545454545454,3.5,-10000,-10000,Rated 3.5,"[u'food platter', u'way']"
 86,HippieSoul,1.736842105263158,-10000,2.5555555555555554,-10000,Rated 4.0,"[u'taste', u'side']"
 87,Manpreet Singh,-0.8,-10000,3.0,-10000,Rated 3.0,[]
 88,Mehak Sapra,1.9444444444444444,2.111111111111111,3.2386363636363633,-10000,Rated 3.5,[]
 89,Sanchi Soota,1.6666666666666667,1.0,1.3125,-10000,Rated 4.0,"[u'try', u'juices']"
-90,Girish Kumar,2.0703125,0.17857142857142858,4.0,-10000,Rated 5.0,"[u'lettuce', u'Couscous', u'Prawns', u'plane', u'portion', u'Fish']"
-91,Singhswati1231,3.104166666666667,-10000,3.3571428571428577,-10000,Rated 4.0,[]
-92,Priyanshu Kumar,2.2241379310344827,2.8,2.9347826086956523,-10000,Rated 4.5,"[u'taste', u'non', u'beverages', u'Fish', u'menu']"
+90,Girish Kumar,2.0703125,0.17857142857142858,4.0,-10000,Rated 5.0,"[u'lettuce', u'chunks', u'Couscous', u'version', u'hit', u'spot', u'Prawns', u'plane', u'portion', u'Fish']"
+91,Singhswati1231,3.104166666666667,-10000,3.3571428571428577,-10000,Rated 4.0,[u'drinks']
+92,Priyanshu Kumar,2.2710843373493974,2.586206896551724,2.9347826086956523,-10000,Rated 4.5,"[u'taste', u'non', u'beverages', u'Fish', u'menu', u'nature']"
