@@ -652,7 +652,7 @@ def main_func(review):
 
     # print dish_score
 
-main_func(ww)
+# main_func(ww)
 
 
 
