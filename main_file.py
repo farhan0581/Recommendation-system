@@ -617,12 +617,12 @@ def main_func(review):
     dp,dd,names = typedependencies(sent,neg_words,compound_word_list)
     check_for_noun_adj(dp,dd,final_score,neg_words)
     print dd
-    print '---------------Before root-------------'
+    print '---------------final_score-------------'
     pprint.pprint(final_score)
     # if len(sent) < 3:
         # check_for_root(dp,dd,final_score,neg_words)
-    print '--------------after root----------------'
-    pprint.pprint(final_score)
+    # print '--------------after root----------------'
+    # pprint.pprint(final_score)
     # print compound_word_list
     for i in range(len(compound_word_list)):
         compound_word_dic[compound_word_list[i]] = 1
@@ -653,6 +653,83 @@ def main_func(review):
     # print dish_score
 
 # main_func(ww)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

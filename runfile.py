@@ -3,7 +3,7 @@ from classifier import get_dish_lookup
 import os
 import csv
 
-
+dish_dic = get_dish_lookup()
 
 def check_dish(lis):
 	result = []
@@ -75,7 +75,6 @@ def finding_score_of_file(filename,restname):
 
 def manipulate_file(filename):
 	# filename = 'Cafe Dalal Street _reviews.csv'
-	dish_dic = get_dish_lookup()
 
 	handle = open('data/scores/' + filename[:-4] + '_scores.csv','w')
 	writer = csv.writer(handle)
@@ -88,15 +87,15 @@ def manipulate_file(filename):
 		review = row['Review']
 		name = row['Username']
 		rating = row['Rating']
-		try:
-			food,service,ambience,cost,dishes = main_func(review)
-			dish_li = check_dish(dishes)
-			writer.writerow([count,name,food,service,ambience,cost,rating,dish_li])
-			print food,service,ambience,cost
-		except:
-			print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+		# try:
+		food,service,ambience,cost,dishes = main_func(review)
+		dish_li = check_dish(dishes)
+		writer.writerow([count,name,food,service,ambience,cost,rating,dish_li])
+		print food,service,ambience,cost
+		# except:
+			# print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
 		count = count + 1
 
 
-# manipulate_file('Jungle Jamboree _reviews.csv')
-finding_score_of_file('Jungle Jamboree _reviews_scores.csv','jungle jumboore')
+manipulate_file('test.csv')
+finding_score_of_file('test_scores.csv','test')
